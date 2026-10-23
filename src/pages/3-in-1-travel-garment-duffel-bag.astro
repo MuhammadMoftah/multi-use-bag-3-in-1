@@ -1,0 +1,100 @@
+---
+import { getImage } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import Hero from '../components/sections/Hero.astro';
+import ProductIntro from '../components/sections/ProductIntro.astro';
+import HowItWorks from '../components/sections/HowItWorks.astro';
+import ProductDetails from '../components/sections/ProductDetails.astro';
+import Features from '../components/sections/Features.astro';
+import Gallery from '../components/sections/Gallery.astro';
+import Occasions from '../components/sections/Occasions.astro';
+import Specifications from '../components/sections/Specifications.astro';
+import Brand from '../components/sections/Brand.astro';
+import Faq from '../components/sections/Faq.astro';
+import Order from '../components/sections/Order.astro';
+import { travelBagImages } from '../content/eloura-travel-bag.media.js';
+import { content, faqItems } from '../lib/content.js';
+
+const { seo, product, commerce, store, packageContents } = content;
+
+const ogImage = await getImage({
+  src: travelBagImages.ogImage.src,
+  width: 1200,
+  height: 630,
+  fit: 'cover',
+  format: 'jpg',
+  quality: 75,
+});
+const absolute = (path: string) => (Astro.site ? new URL(path, Astro.site).href : undefined);
+const pageUrl = absolute(Astro.url.pathname);
+const imageUrl = absolute(ogImage.src);
+
+const offer =
+  typeof commerce.price === 'number' && commerce.checkoutUrl
+    ? { '@type': 'Offer', price: commerce.price, priceCurrency: commerce.currency, url: commerce.checkoutUrl }
+    : undefined;
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Product',
+      '@id': '#product',
+      name: product.name,
+      alternateName: product.nameEn,
+      description: seo.description,
+      brand: { '@type': 'Brand', name: product.brand },
+      material: product.materialEn,
+      ...(imageUrl && { image: [imageUrl] }),
+      ...(pageUrl && { url: pageUrl }),
+      audience: { '@type': 'PeopleAudience', suggestedGender: 'unisex' },
+      additionalProperty: [
+        { '@type': 'PropertyValue', name: 'Dimensions (approx.)', value: `${product.dimensions.cm} cm (${product.dimensions.in} in)` },
+        { '@type': 'PropertyValue', name: 'Shoe bag dimensions (approx.)', value: `${product.shoeBagDimensions.cm} cm (${product.shoeBagDimensions.in} in)` },
+        { '@type': 'PropertyValue', name: 'Carrying options', value: 'Hand, shoulder, crossbody' },
+        { '@type': 'PropertyValue', name: 'Water resistance', value: 'Water-resistant' },
+        { '@type': 'PropertyValue', name: 'Package contents', value: packageContents.join('، ') },
+      ],
+      ...(offer && { offers: offer }),
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: faqItems.map((item: any) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: { '@type': 'Answer', text: item.answer },
+      })),
+    },
+    {
+      '@type': 'WebPage',
+      name: seo.title,
+      description: seo.description,
+      inLanguage: 'ar-EG',
+      about: { '@id': '#product' },
+      publisher: { '@type': 'Organization', name: store.name, ...(store.url && { url: store.url }) },
+    },
+  ],
+};
+---
+
+<Layout title={seo.title} description={seo.description} ogImage={ogImage.src} structuredData={structuredData}>
+  <div class="page-shell">
+    <SiteHeader items={content.nav} />
+    <main id="main">
+      <Hero />
+      <ProductIntro />
+      <HowItWorks />
+      <ProductDetails />
+      <Features />
+      <Gallery />
+      <Occasions />
+      <Specifications />
+      <Brand />
+      <Faq />
+      <Order />
+    </main>
+    <SiteFooter items={content.nav} />
+  </div>
+</Layout>

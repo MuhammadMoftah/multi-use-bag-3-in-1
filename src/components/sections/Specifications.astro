@@ -1,0 +1,99 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import Icon from '../ui/Icon.astro';
+import OrderLink from '../ui/OrderLink.astro';
+import { content, formatPrice } from '../../lib/content.js';
+
+const { specs, packageContents, care, ctas, order } = content;
+const price = formatPrice();
+const bar = price ? [...specs.bar, { label: order.priceLabel, value: price }] : specs.bar;
+---
+
+<section id="specs" class="section" aria-labelledby="specs-title">
+  <div class="container-x">
+    <SectionHeading id="specs-title" eyebrow={specs.eyebrow} title={specs.title} accent={specs.accent} align="center" class="max-w-3xl">
+      <p>{specs.description}</p>
+    </SectionHeading>
+
+    <dl class="pill-bar mx-auto mt-14 max-w-6xl" data-reveal>
+      {
+        bar.map((item: any) => (
+          <div>
+            <dt class="label">{item.label}</dt>
+            <dd class="font-display text-[clamp(1.5rem,1.2rem+1vw,2.125rem)] leading-none whitespace-nowrap text-champagne-300">
+              {item.value}
+              {item.unit && <span class="ms-1 font-sans text-[0.875rem] text-champagne-500">{item.unit}</span>}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <div class="mx-auto mt-14 grid max-w-5xl gap-12 md:grid-cols-3 md:gap-10">
+      <div data-reveal>
+        <h3 class="heading-3 text-[1.5rem]">{specs.materialTitle}</h3>
+        <p class="mt-3 text-[0.95rem] text-mist-300">{specs.material}</p>
+      </div>
+      <div data-reveal style="--reveal-delay:100">
+        <h3 class="heading-3 text-[1.5rem]">{specs.contentsTitle}</h3>
+        <ol class="relative mt-4 space-y-4 border-s border-champagne-300/25 ps-6">
+          {
+            packageContents.map((item: string) => (
+              <li class="relative text-[0.95rem] text-champagne-100">
+                <span class="absolute -start-[1.82rem] top-2.5 size-2.5 rounded-full bg-champagne-300" aria-hidden="true" />
+                {item}
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+      <div data-reveal style="--reveal-delay:200">
+        <h3 class="heading-3 text-[1.5rem]">{specs.careTitle}</h3>
+        <ul class="mt-4 space-y-2">
+          {
+            care.map((line: string) => (
+              <li class="flex gap-2.5 text-[0.95rem] text-mist-300">
+                <Icon name="check" class="mt-1.5 size-4 shrink-0 text-champagne-500" />
+                {line}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <details class="group hairline mx-auto mt-16 max-w-5xl border-y" data-reveal>
+      <summary class="flex min-h-16 cursor-pointer list-none items-center justify-between gap-4 py-5 text-start [&::-webkit-details-marker]:hidden">
+        <span>
+          <span class="block font-display text-2xl text-champagne-100">{specs.tableTitle}</span>
+          <span class="meta mt-1 block">{specs.table.length} بند</span>
+        </span>
+        <span class="btn-round size-10 shrink-0">
+          <Icon name="plus" class="size-4 transition-transform duration-500 group-open:rotate-45" />
+        </span>
+      </summary>
+      <div class="overflow-x-auto pb-6">
+        <table class="w-full text-start text-sm">
+          <caption class="sr-only">{specs.tableTitle}</caption>
+          <tbody>
+            {
+              specs.table.map((row: any) => (
+                <tr class="border-b border-champagne-300/10">
+                  <th scope="row" class="py-3 pe-6 text-start font-normal text-mist-400">{row.label}</th>
+                  <td class="py-3 text-end text-champagne-100">
+                    {row.lang ? <span lang={row.lang} dir="ltr">{row.value}</span> : row.value}
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <div class="mx-auto mt-12 flex max-w-5xl flex-col gap-8 md:flex-row md:items-center md:justify-between" data-reveal>
+      <p class="source-note max-w-2xl">{specs.disclaimer}</p>
+      <OrderLink class="btn shrink-0">{ctas.primary}</OrderLink>
+    </div>
+  </div>
+</section>

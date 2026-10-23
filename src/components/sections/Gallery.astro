@@ -1,25 +1,25 @@
 ---
 import { getImage } from 'astro:assets';
 import GalleryShowcase from '../gallery/GalleryShowcase.vue';
-import media, { galleryOrder } from '../../content/solana-east.media.js';
-import { getSection } from '../../lib/content.js';
+import media, { galleryOrder } from '../../content/eloura-travel-bag.media.js';
+import { content } from '../../lib/content.js';
 
-const section = getSection('gallery');
+const { gallery } = content;
 
 const items = await Promise.all(
   galleryOrder.map(async (id) => {
-    const entry = media[id as keyof typeof media];
+    const entry: any = media[id as keyof typeof media];
     const [featured, thumb, full] = await Promise.all([
-      getImage({ src: entry.src, widths: [640, 960, 1280, 1600], format: 'webp', quality: 60 }),
+      getImage({ src: entry.src, widths: [640, 960, 1280], format: 'webp', quality: 62 }),
       getImage({ src: entry.src, widths: [240, 360, 480], format: 'webp', quality: 58 }),
-      getImage({ src: entry.src, width: 1920, format: 'webp', quality: 66 }),
+      getImage({ src: entry.src, width: 1600, format: 'webp', quality: 70 }),
     ]);
     return {
       id,
       alt: entry.alt,
       caption: entry.caption,
-      position: 'position' in entry ? entry.position : undefined,
-      // Reading entry.src.* directly would make Astro copy the multi-megabyte original into dist.
+      position: entry.position,
+      // Reading entry.src.* for URLs would make Astro copy the original into dist.
       width: Number(featured.attributes.width),
       height: Number(featured.attributes.height),
       featuredSrc: featured.src,
@@ -36,16 +36,13 @@ const items = await Promise.all(
   <div class="container-x">
     <div class="grid items-end gap-8 lg:grid-cols-12">
       <div class="lg:col-span-7">
-        <p class="eyebrow" data-reveal>{section.title}</p>
-        <h2 id="gallery-title" class="heading-2 mt-6" data-reveal style="--reveal-delay:80">The atmosphere</h2>
+        <p class="eyebrow" data-reveal>{gallery.eyebrow}</p>
+        <h2 id="gallery-title" class="heading-2 mt-6" data-reveal style="--reveal-delay:80">{gallery.heading}</h2>
       </div>
-      <p class="lead lg:col-span-5 lg:pb-2" data-reveal style="--reveal-delay:140">
-        Shaded villa terraces, calm courtyards and material-rich interiors — a closer look at the architectural language
-        of Solana East. All images are architectural visualizations.
-      </p>
+      <p class="lead lg:col-span-5 lg:pb-2" data-reveal style="--reveal-delay:140">{gallery.description}</p>
     </div>
     <div class="mt-14 lg:mt-16" data-reveal="fade">
-      <GalleryShowcase client:visible items={items} />
+      <GalleryShowcase client:visible items={items} label="صور شنطة السفر الترند 3 في 1" />
     </div>
   </div>
 </section>

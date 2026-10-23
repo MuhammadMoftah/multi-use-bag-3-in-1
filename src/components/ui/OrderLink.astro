@@ -1,0 +1,17 @@
+---
+/** Purchase CTA: the verified checkout page when configured, otherwise the order section. */
+import Icon from './Icon.astro';
+import { orderHref, hasCheckout } from '../../lib/content.js';
+
+interface Props {
+  class?: string;
+  arrow?: boolean;
+}
+
+const { class: className = 'btn', arrow = true } = Astro.props;
+---
+
+<a href={orderHref} class={className} data-checkout={hasCheckout ? '' : undefined}>
+  <slot />
+  {arrow && <Icon name="arrow" class="btn-arrow" />}
+</a>

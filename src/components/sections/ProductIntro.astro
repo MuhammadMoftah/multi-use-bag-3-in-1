@@ -1,0 +1,78 @@
+---
+import { Image } from 'astro:assets';
+import { travelBagImages } from '../../content/eloura-travel-bag.media.js';
+import { content } from '../../lib/content.js';
+
+const { intro } = content;
+const main = travelBagImages.productMain;
+const inset = travelBagImages.productInset;
+---
+
+<section id="product" class="section overflow-hidden" aria-labelledby="product-title">
+  <div class="grid items-center gap-y-16 lg:grid-cols-2 lg:gap-x-4">
+    <div class="relative pe-6 pb-[22%] sm:pe-16 lg:pe-10 lg:pb-[18%]">
+      <div class="shape-pebble-right hover-zoom relative aspect-[4/3] w-[92%] overflow-hidden" data-reveal="image">
+        <Image
+          src={main.src}
+          alt={main.alt}
+          widths={[480, 720, 960, 1280]}
+          sizes="(min-width: 64rem) 45vw, 92vw"
+          quality={62}
+          class="media-fill"
+        />
+      </div>
+      <div
+        class="shape-circle hover-zoom absolute end-[6%] bottom-0 w-[44%] border-[6px] border-night-900 sm:end-[12%] lg:end-[6%]"
+        data-reveal="scale"
+        style="--reveal-delay:200"
+      >
+        <Image src={inset.src} alt={inset.alt} widths={[360, 560]} sizes="(min-width: 64rem) 20vw, 42vw" quality={62} class="media-fill" />
+      </div>
+      <span
+        class="absolute start-[8%] bottom-[12%] hidden size-28 rounded-full border border-champagne-300/25 sm:block"
+        aria-hidden="true"
+      ></span>
+    </div>
+
+    <div class="container-x lg:mx-0 lg:max-w-[38rem] lg:ps-8 lg:pe-16">
+      <p class="eyebrow" data-reveal>{intro.eyebrow}</p>
+      <h2 id="product-title" class="heading-2 mt-6" data-reveal style="--reveal-delay:80">
+        {intro.heading}
+        <span class="italic-accent mt-4 block">{intro.accent}</span>
+      </h2>
+      {
+        intro.paragraphs.map((text: string, index: number) => (
+          <p class:list={['lead', index === 0 ? 'mt-8' : 'mt-5']} data-reveal style={`--reveal-delay:${140 + index * 40}`}>
+            {text}
+          </p>
+        ))
+      }
+      <p class="mt-5 text-[0.95rem] font-semibold text-champagne-100" data-reveal style="--reveal-delay:220">{intro.closing}</p>
+
+      <dl class="hairline mt-12 grid grid-cols-2 gap-x-6 gap-y-8 border-t pt-8 sm:grid-cols-3 sm:gap-8" data-reveal style="--reveal-delay:240">
+        {
+          intro.figures.map((figure: any, index: number) => (
+            <div class:list={[index === 2 && 'col-span-2 sm:col-span-1']}>
+              <dt class="sr-only">{figure.detail}</dt>
+              <dd>
+                <span class="block font-display text-[clamp(1.75rem,1.3rem+1.7vw,2.75rem)] leading-none whitespace-nowrap text-champagne-300">
+                  {figure.value}
+                  <span class="ms-1 font-sans text-[0.8125rem] text-champagne-500">
+                    {figure.unit}
+                    {figure.starred && <sup aria-hidden="true">*</sup>}
+                  </span>
+                </span>
+                <span class="meta mt-3 block" aria-hidden="true">
+                  {figure.detail}
+                </span>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+      <p class="source-note mt-6" data-reveal>
+        <span aria-hidden="true">*</span>{intro.footnote}
+      </p>
+    </div>
+  </div>
+</section>

@@ -1,6 +1,9 @@
 # build output
 dist/
 
+# image-crop previews (scripts/prepare-product-images.mjs --preview)
+.preview/
+
 # generated types
 .astro/
 

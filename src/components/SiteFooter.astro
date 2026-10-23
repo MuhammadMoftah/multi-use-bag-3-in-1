@@ -1,6 +1,6 @@
 ---
 import Wordmark from './ui/Wordmark.astro';
-import { content, getSection, digitsOnly } from '../lib/content.js';
+import { content } from '../lib/content.js';
 import type { NavItem } from './SiteHeader.astro';
 
 interface Props {
@@ -8,23 +8,25 @@ interface Props {
 }
 
 const { items } = Astro.props;
-const { project, sources, lastResearched } = content;
-const contact = getSection('contact').content.thirdPartyContact;
-const year = new Date(`${lastResearched}T00:00:00Z`).getUTCFullYear();
+const { store, product, footer } = content;
+const storeLinks = footer.links
+  .map((link: any) => ({ label: link.label, href: (store as Record<string, string | null>)[link.key] }))
+  .filter((link: any) => link.href);
+const year = new Date().getFullYear();
 ---
 
 <footer class="relative border-t border-champagne-300/15 bg-night-950/40">
   <div class="container-x py-16 text-center lg:py-20">
-    <a href="#top" class="inline-block" aria-label="Solana East by ORA — back to top">
+    <a href="#top" class="inline-block" aria-label={`${store.name} — الرجوع لأول الصفحة`}>
       <Wordmark size="lg" />
     </a>
 
-    <nav aria-label="Footer" class="mt-10">
+    <nav aria-label="روابط الفوتر" class="mt-10">
       <ul class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
         {
-          [...items, { href: '#faq', label: 'FAQ' }].map((item) => (
+          [...items, { href: '#order', label: 'اطلبي' }].map((item) => (
             <li>
-              <a href={item.href} class="link-underline inline-flex min-h-11 items-center px-3 text-[0.8125rem] tracking-[0.04em] text-mist-200 hover:text-champagne-100">
+              <a href={item.href} class="link-underline inline-flex min-h-11 items-center px-3 text-[0.875rem] text-mist-200 hover:text-champagne-100">
                 {item.label}
               </a>
             </li>
@@ -33,42 +35,27 @@ const year = new Date(`${lastResearched}T00:00:00Z`).getUTCFullYear();
       </ul>
     </nav>
 
-    <div class="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm">
-      <p>
-        <span class="text-mist-400">Call / WhatsApp</span>
-        <a href={`tel:+${digitsOnly(contact.phone)}`} class="ml-2 text-champagne-100 hover:text-champagne-300">{contact.phone}</a>
-      </p>
-      <p>
-        <span class="text-mist-400">Developer</span>
-        <a href={project.developer.website} target="_blank" rel="noopener" class="ml-2 text-champagne-100 hover:text-champagne-300">
-          {project.developer.name}<span class="sr-only"> (opens in a new tab)</span>
-        </a>
-      </p>
-      <p class="text-mist-300">{project.location.city}, {project.location.broaderArea}, {project.location.country}</p>
-    </div>
+    <p class="mt-8 text-sm text-mist-300">
+      {product.name} <span class="text-mist-400" aria-hidden="true">·</span> <span lang="en" dir="ltr">{product.nameEn}</span>
+    </p>
 
     <div class="hairline mx-auto mt-12 max-w-4xl border-t pt-8">
-      <p class="label">Sources</p>
-      <ul class="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs">
-        {
-          sources
-            .filter((source: any) => source.id !== 'ora-project-page')
-            .map((source: any) => (
+      {
+        storeLinks.length > 0 && (
+          <ul class="mb-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm">
+            {storeLinks.map((link: any) => (
               <li>
-                <a href={source.url} target="_blank" rel="noopener" class="text-mist-300 underline decoration-mist-400/40 underline-offset-4 hover:text-champagne-100">
-                  {source.name}
-                  <span class="sr-only"> (opens in a new tab)</span>
+                <a href={link.href} target="_blank" rel="noopener" class="text-mist-300 underline decoration-mist-400/40 underline-offset-4 hover:text-champagne-100">
+                  {link.label}
+                  <span class="sr-only"> (بيفتح في تاب جديدة)</span>
                 </a>
               </li>
-            ))
-        }
-      </ul>
-      <p class="source-note mx-auto mt-6 max-w-3xl">
-        Information compiled from the sources above (research snapshot, {lastResearched}). Prices, availability, payment
-        terms and delivery dates may change and must be confirmed with the developer or an authorized sales
-        representative. Images are architectural visualizations.
-      </p>
-      <p class="source-note mt-4">© {year} {project.displayName}</p>
+            ))}
+          </ul>
+        )
+      }
+      <p class="source-note mx-auto max-w-3xl">{footer.note}</p>
+      <p class="source-note mt-4" dir="ltr">© {year} {store.name}</p>
     </div>
   </div>
 </footer>

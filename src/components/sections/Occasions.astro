@@ -1,0 +1,54 @@
+---
+import Icon from '../ui/Icon.astro';
+import { content, pad2 } from '../../lib/content.js';
+
+const { occasions } = content;
+---
+
+<section id="occasions" class="section section-tint overflow-hidden" aria-labelledby="occasions-title">
+  <div class="pointer-events-none absolute -start-[18rem] top-1/2 hidden size-[40rem] -translate-y-1/2 lg:block" aria-hidden="true">
+    <span class="absolute inset-0 rounded-full border border-champagne-300/10"></span>
+    <span class="absolute inset-[5rem] rounded-full border border-champagne-300/10"></span>
+    <span class="absolute inset-[10rem] rounded-full border border-champagne-300/[0.12]"></span>
+    <span class="absolute inset-[15rem] rounded-full border border-champagne-300/15"></span>
+  </div>
+
+  <div class="container-x relative grid gap-14 lg:grid-cols-12 lg:gap-12">
+    <div class="lg:col-span-5">
+      <p class="eyebrow" data-reveal>{occasions.eyebrow}</p>
+      <h2 id="occasions-title" class="heading-2 mt-6" data-reveal style="--reveal-delay:80">
+        {occasions.heading}
+        <span class="italic-accent mt-4 block">{occasions.accent}</span>
+      </h2>
+      <p class="lead mt-8" data-reveal style="--reveal-delay:140">{occasions.description}</p>
+      <p class="label mt-10 text-champagne-500" data-reveal style="--reveal-delay:160">{occasions.carryTitle}</p>
+      <ul class="mt-4 space-y-3" data-reveal style="--reveal-delay:180">
+        {
+          occasions.carry.map((item: string) => (
+            <li class="flex items-center gap-3 text-champagne-100">
+              <Icon name="bag" class="size-5 text-champagne-500" />
+              {item}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="lg:col-span-6 lg:col-start-7">
+      <ol class="hairline border-t">
+        {
+          occasions.items.map((item: any, index: number) => (
+            <li class="hairline grid grid-cols-[1fr_auto] items-baseline gap-x-6 gap-y-1 border-b py-6" data-reveal style={`--reveal-delay:${index * 70}`}>
+              <span class="font-display text-[clamp(1.375rem,1.1rem+0.9vw,1.875rem)] leading-tight text-champagne-100">{item.title}</span>
+              <span class="font-display text-[clamp(2rem,1.6rem+1.4vw,2.875rem)] leading-none text-champagne-300 tabular-nums" aria-hidden="true">
+                {pad2(index)}
+              </span>
+              <span class="meta col-span-2 text-sm">{item.detail}</span>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="source-note mt-6" data-reveal>{occasions.note}</p>
+    </div>
+  </div>
+</section>

@@ -1,95 +1,21 @@
-import content from '../content/solana-east.content.js';
+import * as content from '../content/eloura-travel-bag.content.js';
 
 export { content };
 
-const sectionsById = new Map(content.sections.map((section) => [section.id, section]));
-const sourcesById = new Map(content.sources.map((source) => [source.id, source]));
+const { commerce, faq } = content;
 
-export function getSection(id) {
-  const section = sectionsById.get(id);
-  if (!section) throw new Error(`Unknown content section: ${id}`);
-  return section;
-}
+/** Where purchase CTAs point: the verified checkout page, or the on-page order section. */
+export const orderHref = commerce.checkoutUrl ?? '#order';
+export const hasCheckout = Boolean(commerce.checkoutUrl);
 
-export function getSource(id) {
-  return sourcesById.get(id);
-}
+/** FAQ entries that describe the checkout flow only make sense once it exists. */
+export const faqItems = faq.items.filter((item) => !item.requiresCheckout || hasCheckout);
 
-/** Short, human-readable source names for inline attribution. */
-const SOURCE_LABELS = {
-  'ora-brochure': 'ORA brochure',
-  'solana-east-guide': 'Solana East Egypt guide',
-  'property-finder': 'Property Finder',
-  'ora-project-page': 'ORA website',
-};
+const priceFormat = new Intl.NumberFormat('ar-EG-u-nu-latn', { maximumFractionDigits: 0 });
 
-export function sourceLabel(id) {
-  return SOURCE_LABELS[id] ?? getSource(id)?.name ?? id;
-}
-
-export function sourceList(ids = []) {
-  return [...new Set(ids)].map(sourceLabel).join(' · ');
-}
-
-const numberFormat = new Intl.NumberFormat('en-US');
-
-export function formatNumber(value) {
-  return numberFormat.format(value);
-}
-
-/** EGP amounts as compact millions, e.g. 13900000 → "13.9M". */
-export function formatEgpMillions(value) {
-  const millions = value / 1_000_000;
-  return `${Number.isInteger(millions) ? millions : millions.toFixed(millions < 20 ? 3 : 2).replace(/0+$/, '').replace(/\.$/, '')}M`;
-}
-
-/** Unit configurations store sizes as `sizeSqm`, `sizeRangeSqm` or `sourceReportedRangeSqm`. */
-export function configSizeRange(config) {
-  if (typeof config.sizeSqm === 'number') return [config.sizeSqm, config.sizeSqm];
-  const range = config.sizeRangeSqm ?? config.sourceReportedRangeSqm;
-  if (Array.isArray(range)) return range;
-  const layouts = config.layouts ?? config.layoutTypes ?? [];
-  const sizes = layouts.map((layout) => layout.sizeSqm);
-  return sizes.length ? [Math.min(...sizes), Math.max(...sizes)] : null;
-}
-
-export function formatRange([min, max], unit = 'm²') {
-  return min === max ? `${formatNumber(min)} ${unit}` : `${formatNumber(min)}–${formatNumber(max)} ${unit}`;
-}
-
-/** Layout lists are stored as `layouts` or `layoutTypes`. */
-export function configLayouts(config) {
-  return config.layouts ?? config.layoutTypes ?? [];
-}
-
-export function unitTypeSummary(unitType) {
-  const ranges = unitType.configurations.map(configSizeRange).filter(Boolean);
-  const bedrooms = unitType.configurations.map((config) => config.bedrooms);
-  const prices = unitType.configurations
-    .map((config) => config.sourceStartingPriceEgp)
-    .filter((price) => typeof price === 'number');
-  return {
-    sizeRange: ranges.length
-      ? [Math.min(...ranges.map((r) => r[0])), Math.max(...ranges.map((r) => r[1]))]
-      : null,
-    bedroomRange: [Math.min(...bedrooms), Math.max(...bedrooms)],
-    startingPriceEgp: prices.length ? Math.min(...prices) : null,
-    layoutCount: unitType.configurations.reduce((sum, config) => sum + configLayouts(config).length, 0),
-  };
-}
-
-export function formatBedrooms([min, max]) {
-  return min === max ? `${min} bedroom${min === 1 ? '' : 's'}` : `${min}–${max} bedrooms`;
-}
-
-const monthFormat = new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
-
-export function formatMonth(isoDate) {
-  return monthFormat.format(new Date(`${isoDate}T00:00:00Z`));
-}
-
-export function digitsOnly(phone) {
-  return phone.replace(/[^\d]/g, '');
+/** e.g. 1250 → "1,250 ج.م", or null while the price is unconfirmed. */
+export function formatPrice(value = commerce.price) {
+  return typeof value === 'number' ? `${priceFormat.format(value)} ج.م` : null;
 }
 
 /** Two-digit index used for editorial numbering, e.g. 0 → "01". */

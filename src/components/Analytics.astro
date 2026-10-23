@@ -1,0 +1,72 @@
+---
+/**
+ * Optional Meta Pixel / GA4. Renders nothing until IDs are set in
+ * `analytics` (src/content/eloura-travel-bag.content.js).
+ *
+ * Events: PageView + ViewContent (view_item) once per page load, and
+ * InitiateCheckout (begin_checkout) once, when a visitor clicks a link marked
+ * `data-checkout` (only rendered when a verified checkout URL exists).
+ * Purchase is not fired here: orders complete on EasyOrders, so it must come
+ * from EasyOrders' own tracking.
+ */
+import { content } from '../lib/content.js';
+
+const { analytics, commerce, product } = content;
+const pixelId = analytics.metaPixelId;
+const ga4Id = analytics.ga4MeasurementId;
+const productInfo = {
+  name: product.nameEn,
+  id: product.slug,
+  currency: commerce.currency,
+  value: typeof commerce.price === 'number' ? commerce.price : null,
+};
+---
+
+{
+  pixelId && (
+    <script is:inline define:vars={{ pixelId }}>
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+      document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', pixelId);
+      fbq('track', 'PageView');
+    </script>
+  )
+}
+{
+  ga4Id && (
+    <>
+      <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${ga4Id}`} />
+      <script is:inline define:vars={{ ga4Id }}>
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () { dataLayer.push(arguments); };
+        gtag('js', new Date());
+        gtag('config', ga4Id);
+      </script>
+    </>
+  )
+}
+{
+  (pixelId || ga4Id) && (
+    <script is:inline define:vars={{ productInfo }}>
+      (function () {
+        var meta = { content_name: productInfo.name, content_ids: [productInfo.id], content_type: 'product', currency: productInfo.currency };
+        var item = { currency: productInfo.currency, items: [{ item_id: productInfo.id, item_name: productInfo.name }] };
+        if (productInfo.value !== null) { meta.value = productInfo.value; item.value = productInfo.value; item.items[0].price = productInfo.value; }
+        function track(metaEvent, gaEvent) {
+          if (window.fbq) window.fbq('track', metaEvent, meta);
+          if (window.gtag) window.gtag('event', gaEvent, item);
+        }
+        track('ViewContent', 'view_item');
+        var checkoutTracked = false;
+        document.addEventListener('click', function (event) {
+          if (checkoutTracked || !event.target.closest || !event.target.closest('a[data-checkout]')) return;
+          checkoutTracked = true;
+          track('InitiateCheckout', 'begin_checkout');
+        });
+      })();
+    </script>
+  )
+}

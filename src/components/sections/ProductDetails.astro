@@ -1,0 +1,79 @@
+---
+import { Image } from 'astro:assets';
+import SectionHeading from '../ui/SectionHeading.astro';
+import Icon from '../ui/Icon.astro';
+import OrderLink from '../ui/OrderLink.astro';
+import { travelBagImages } from '../../content/eloura-travel-bag.media.js';
+import { content, pad2 } from '../../lib/content.js';
+
+const { details, ctas } = content;
+const detailImages: Record<string, any> = travelBagImages.details;
+const cards = details.items.map((item: any) => ({ ...item, image: detailImages[item.id] }));
+---
+
+<section id="details" class="section section-tint" aria-labelledby="details-title">
+  <div class="container-x">
+    <div class="grid items-end gap-10 lg:grid-cols-12">
+      <SectionHeading id="details-title" eyebrow={details.eyebrow} title={details.heading} class="lg:col-span-7" />
+      <div class="lg:col-span-5 lg:pb-2" data-reveal style="--reveal-delay:120">
+        <p class="lead">{details.description}</p>
+      </div>
+    </div>
+
+    <ul class="mt-16 grid items-start gap-x-6 gap-y-14 sm:grid-cols-2 lg:mt-20 xl:grid-cols-4">
+      {
+        cards.map((item: any, index: number) => (
+          <li class:list={['group', index % 2 === 1 && 'xl:mt-16']} data-reveal style={`--reveal-delay:${index * 100}`}>
+            <article aria-labelledby={`detail-${item.id}`}>
+              <div class="shape-arch hover-zoom relative aspect-[5/4] border border-champagne-300/15 sm:aspect-[3/4]">
+                <Image
+                  src={item.image.src}
+                  alt={item.image.alt}
+                  widths={[360, 540, 720]}
+                  sizes="(min-width: 80rem) 18rem, (min-width: 40rem) 45vw, 90vw"
+                  quality={62}
+                  class="media-fill"
+                  style={item.image.position ? `object-position:${item.image.position}` : undefined}
+                />
+              </div>
+
+              <p class="label mt-7 text-champagne-500">{pad2(index)}</p>
+              <h3 id={`detail-${item.id}`} class="heading-3 mt-2">
+                {item.name}
+              </h3>
+
+              <dl class="hairline mt-5 divide-y divide-champagne-300/15 border-y text-sm">
+                {item.rows.map((row: any) => (
+                  <div class="flex justify-between gap-4 py-3">
+                    <dt class="text-mist-400">{row.label}</dt>
+                    <dd class="text-end text-champagne-100">{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+
+              <details class="group/details mt-1">
+                <summary class="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 text-[0.8125rem] font-semibold text-champagne-300 [&::-webkit-details-marker]:hidden">
+                  {details.moreLabel}
+                  <Icon name="plus" class="size-4 transition-transform duration-500 group-open/details:rotate-45" />
+                </summary>
+                <ul class="space-y-2 pb-2">
+                  {item.more.map((line: string) => (
+                    <li class="flex gap-2.5 text-sm text-mist-300">
+                      <Icon name="check" class="mt-1 size-4 shrink-0 text-champagne-500" />
+                      {line}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            </article>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="mt-16 flex flex-col gap-6 border-t border-champagne-300/15 pt-8 md:flex-row md:items-center md:justify-between" data-reveal>
+      <p class="source-note max-w-2xl">{details.note}</p>
+      <OrderLink class="btn shrink-0">{ctas.primary}</OrderLink>
+    </div>
+  </div>
+</section>

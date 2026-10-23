@@ -24,8 +24,9 @@
 
   --color-error: #f0a58f;
 
-  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
-  --font-sans: var(--font-manrope), Manrope, system-ui, sans-serif;
+  /* Latin families first (subset to Latin), Arabic companions catch Arabic glyphs. */
+  --font-display: var(--font-cormorant), var(--font-amiri), Georgia, serif;
+  --font-sans: var(--font-manrope), var(--font-plex-arabic), system-ui, sans-serif;
 
   --text-display: clamp(2.75rem, 1.55rem + 4.9vw, 6.25rem);
   --text-display--line-height: 0.96;
@@ -283,6 +284,10 @@
     transition: transform 0.6s var(--ease-out-soft);
   }
 
+  [dir="rtl"] .btn::before {
+    transform-origin: left;
+  }
+
   @media (hover: hover) {
     .btn:hover {
       border-color: var(--color-champagne-300);
@@ -294,9 +299,23 @@
       transform-origin: left;
     }
 
+    [dir="rtl"] .btn:hover::before {
+      transform-origin: right;
+    }
+
     .btn:hover .btn-arrow {
       transform: translateX(0.25rem);
     }
+
+    [dir="rtl"] .btn:hover .btn-arrow {
+      transform: scaleX(-1) translateX(0.25rem);
+    }
+  }
+
+  .btn[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.55;
+    pointer-events: none;
   }
 
   .btn-solid {
@@ -314,6 +333,10 @@
     height: 1rem;
     flex-shrink: 0;
     transition: transform 0.5s var(--ease-out-soft);
+  }
+
+  [dir="rtl"] .btn-arrow {
+    transform: scaleX(-1);
   }
 
   .btn-round {
@@ -428,7 +451,7 @@
 
     .pill-bar > * + * {
       border-top: 0;
-      border-left: 1px solid rgb(217 207 179 / 0.18);
+      border-inline-start: 1px solid rgb(217 207 179 / 0.18);
     }
   }
 
@@ -436,7 +459,7 @@
   .ghost-numeral {
     position: absolute;
     top: -0.18em;
-    left: -0.06em;
+    inset-inline-start: -0.06em;
     z-index: 0;
     color: rgb(217 207 179 / 0.07);
     font-family: var(--font-display);
@@ -481,6 +504,17 @@
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M0 0H1V0.9C0.9 0.97 0.78 1 0.62 0.99C0.44 0.98 0.3 0.9 0.17 0.86C0.1 0.84 0.05 0.84 0 0.85Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M0 0H1V0.9C0.9 0.97 0.78 1 0.62 0.99C0.44 0.98 0.3 0.9 0.17 0.86C0.1 0.84 0.05 0.84 0 0.85Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
   }
+
+/* Mirrored hero shapes for right-to-left pages (image on the left). */
+@utility shape-hero-mirror {
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M0.62 0H0V0.8C0.07 0.87 0.17 0.97 0.34 0.985C0.52 1 0.63 0.93 0.73 0.86C0.86 0.77 0.92 0.64 0.91 0.48C0.9 0.33 0.8 0.25 0.74 0.17C0.69 0.1 0.66 0.04 0.62 0Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M0.62 0H0V0.8C0.07 0.87 0.17 0.97 0.34 0.985C0.52 1 0.63 0.93 0.73 0.86C0.86 0.77 0.92 0.64 0.91 0.48C0.9 0.33 0.8 0.25 0.74 0.17C0.69 0.1 0.66 0.04 0.62 0Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+}
+
+@utility shape-hero-mobile-mirror {
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M1 0H0V0.9C0.1 0.97 0.22 1 0.38 0.99C0.56 0.98 0.7 0.9 0.83 0.86C0.9 0.84 0.95 0.84 1 0.85Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M1 0H0V0.9C0.1 0.97 0.22 1 0.38 0.99C0.56 0.98 0.7 0.9 0.83 0.86C0.9 0.84 0.95 0.84 1 0.85Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+}
 
   /* Soft pebble: a wide shape that bleeds off one edge (Overview, Amenities). */
 @utility shape-pebble {
@@ -560,6 +594,52 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Arabic typography. The Latin type scale relies on tracking, uppercase and very
+ * tight display leading; Arabic is cursive (letter-spacing breaks the joins)
+ * and needs taller lines and slightly larger small text. Latin runs marked
+ * `lang="en"` keep the original treatment.
+ * ------------------------------------------------------------------------- */
+:lang(ar) {
+  letter-spacing: normal;
+}
+
+@layer components {
+  .display-1:lang(ar) {
+    line-height: 1.32;
+  }
+
+  .heading-2:lang(ar) {
+    line-height: 1.38;
+  }
+
+  .heading-3:lang(ar) {
+    line-height: 1.45;
+  }
+
+  /* Amiri ships no italic; avoid a synthesized slant. */
+  .italic-accent:lang(ar) {
+    font-style: normal;
+    line-height: 1.5;
+  }
+
+  .eyebrow:lang(ar),
+  .label:lang(ar) {
+    font-size: 0.8125rem;
+  }
+
+  .btn:lang(ar) {
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .lead:lang(ar) {
+    line-height: 1.95;
   }
 }
 

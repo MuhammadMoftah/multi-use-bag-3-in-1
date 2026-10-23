@@ -1,0 +1,77 @@
+---
+import { Image } from 'astro:assets';
+import SectionHeading from '../ui/SectionHeading.astro';
+import PalmFrond from '../ui/PalmFrond.astro';
+import { travelBagImages } from '../../content/eloura-travel-bag.media.js';
+import { content, pad2 } from '../../lib/content.js';
+
+const { howItWorks } = content;
+const stepImages: Record<string, any> = travelBagImages.howItWorks;
+---
+
+<section id="how-it-works" class="section overflow-hidden" aria-labelledby="how-title">
+  <PalmFrond class="decor-frond top-[38%] -right-40 w-[30rem] rotate-12 -scale-x-100 opacity-70 max-lg:hidden" />
+  <PalmFrond class="decor-frond -left-32 bottom-0 w-[26rem] rotate-[160deg] -scale-x-100 opacity-60 max-lg:hidden" />
+
+  <div class="container-x relative">
+    <SectionHeading id="how-title" eyebrow={howItWorks.eyebrow} title={howItWorks.title} accent={howItWorks.accent} align="center" class="max-w-3xl">
+      <p>{howItWorks.description}</p>
+    </SectionHeading>
+
+    <ol class="relative mx-auto mt-16 grid max-w-5xl grid-cols-2 gap-x-6 gap-y-12 sm:mt-20 md:grid-cols-4">
+      {
+        howItWorks.steps.map((step: any, index: number) => {
+          const image = stepImages[step.id];
+          return (
+            <li class="group relative flex flex-col items-center text-center" data-reveal="scale" style={`--reveal-delay:${index * 110}`}>
+              <div
+                class:list={[
+                  'relative w-[72%]',
+                  index < howItWorks.steps.length - 1 &&
+                    'md:after:absolute md:after:start-full md:after:top-1/2 md:after:h-px md:after:w-[calc(38.9%+1.5rem)] md:after:bg-champagne-300/25',
+                ]}
+              >
+                <div class="shape-circle hover-zoom relative border border-champagne-300/30 p-1.5">
+                  <div class="shape-circle relative">
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      widths={[240, 360, 480]}
+                      sizes="(min-width: 64rem) 11rem, (min-width: 48rem) 17vw, 36vw"
+                      quality={60}
+                      class="media-fill"
+                      style={image.position ? `object-position:${image.position}` : undefined}
+                    />
+                  </div>
+                </div>
+                <span class="absolute -end-1 -top-1 flex size-9 items-center justify-center rounded-full border border-champagne-300/40 bg-night-900 font-display text-base text-champagne-300">
+                  {index + 1}
+                </span>
+              </div>
+              <h3 class="mt-6 max-w-[12rem] font-sans text-[0.9375rem] leading-snug font-medium text-mist-200">
+                {step.title}
+              </h3>
+            </li>
+          );
+        })
+      }
+    </ol>
+
+    <div class="mx-auto mt-24 grid max-w-5xl gap-x-16 gap-y-16 sm:mt-28 md:grid-cols-2 md:gap-y-20">
+      {
+        howItWorks.steps.map((step: any, index: number) => (
+          <article class="relative ps-14 pt-10 sm:ps-20" data-reveal style={`--reveal-delay:${(index % 2) * 120}`}>
+            <span class="ghost-numeral" aria-hidden="true">
+              {index + 1}
+            </span>
+            <p class="label relative text-champagne-500">{pad2(index)}</p>
+            <h3 class="heading-3 relative mt-3">{step.title}</h3>
+            <p class="relative mt-4 max-w-sm text-[0.95rem] leading-relaxed text-mist-300">{step.description}</p>
+          </article>
+        ))
+      }
+    </div>
+
+    <p class="source-note mx-auto mt-20 max-w-5xl text-center" data-reveal>{howItWorks.note}</p>
+  </div>
+</section>

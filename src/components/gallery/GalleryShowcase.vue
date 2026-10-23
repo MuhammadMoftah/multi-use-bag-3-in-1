@@ -15,7 +15,7 @@ interface Item {
   height: number;
 }
 
-const props = defineProps<{ items: Item[] }>();
+const props = defineProps<{ items: Item[]; label: string }>();
 
 const PAGE_SIZE = 6;
 const FEATURED_SIZES = '(min-width: 64rem) 52rem, 100vw';
@@ -38,11 +38,12 @@ function go(next: number) {
 const prev = () => go(index.value - 1);
 const next = () => go(index.value + 1);
 
+// Right-to-left page: "next" lies to the left.
 function onKeydown(event: KeyboardEvent) {
-  if (event.key === 'ArrowRight') {
+  if (event.key === 'ArrowLeft') {
     event.preventDefault();
     next();
-  } else if (event.key === 'ArrowLeft') {
+  } else if (event.key === 'ArrowRight') {
     event.preventDefault();
     prev();
   }
@@ -56,7 +57,7 @@ function onPointerUp(event: PointerEvent) {
   if (startX === null) return;
   const dx = event.clientX - startX;
   startX = null;
-  if (Math.abs(dx) > 40) (dx < 0 ? next : prev)();
+  if (Math.abs(dx) > 40) (dx > 0 ? next : prev)();
 }
 
 // Warm the cache for the neighbouring images so transitions don't wait on the network.
@@ -75,7 +76,7 @@ watch(index, (i) => {
     class="gallery grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,21rem)] lg:items-start lg:gap-7"
     role="region"
     aria-roledescription="carousel"
-    aria-label="Solana East image gallery"
+    :aria-label="label"
     @keydown="onKeydown"
   >
     <figure class="min-w-0">
@@ -101,25 +102,25 @@ watch(index, (i) => {
         </Transition>
       </div>
       <figcaption class="mt-5 flex items-baseline gap-6" aria-live="polite">
-        <span class="font-display text-2xl text-champagne-300 tabular-nums">
+        <span class="font-display text-2xl text-champagne-300 tabular-nums" dir="ltr">
           {{ pad(index + 1) }}<span class="text-mist-400"> / {{ pad(total) }}</span>
         </span>
-        <span class="text-[0.6875rem] font-semibold tracking-[0.22em] text-champagne-100 uppercase">{{ current.caption }}</span>
+        <span class="text-[0.875rem] font-semibold text-champagne-100">{{ current.caption }}</span>
       </figcaption>
     </figure>
 
     <div class="flex items-center gap-3 lg:flex-col lg:self-center" data-requires-js>
-      <button type="button" class="btn-round" aria-label="Previous image" @click="prev">
-        <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M15 6l-6 6 6 6" />
-        </svg>
-      </button>
-      <button type="button" class="btn-round" aria-label="Next image" @click="next">
+      <button type="button" class="btn-round" aria-label="الصورة السابقة" @click="prev">
         <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M9 6l6 6-6 6" />
         </svg>
       </button>
-      <span class="ml-auto text-[0.6875rem] tracking-[0.2em] text-mist-400 uppercase lg:hidden">Swipe or use the arrows</span>
+      <button type="button" class="btn-round" aria-label="الصورة التالية" @click="next">
+        <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 6l-6 6 6 6" />
+        </svg>
+      </button>
+      <span class="ms-auto text-[0.8125rem] text-mist-400 lg:hidden">اسحبي أو استخدمي الأسهم</span>
     </div>
 
     <div class="min-w-0">
@@ -135,7 +136,7 @@ watch(index, (i) => {
             class="thumb group relative block aspect-[4/3] overflow-hidden rounded-2xl border transition-[border-color,opacity] duration-500"
             :class="i === index ? 'border-champagne-300 opacity-100' : 'border-champagne-300/10 opacity-60 hover:opacity-100'"
             :aria-current="i === index ? 'true' : undefined"
-            :aria-label="`Show image ${i + 1}: ${item.caption}`"
+            :aria-label="`اعرضي الصورة ${i + 1}: ${item.caption}`"
             @click.prevent="go(i)"
           >
             <img
@@ -153,8 +154,8 @@ watch(index, (i) => {
           </a>
         </li>
       </ul>
-      <p v-if="pageCount > 1" class="mt-4 hidden text-[0.6875rem] tracking-[0.2em] text-mist-400 uppercase lg:block">
-        Set {{ page + 1 }} of {{ pageCount }}
+      <p v-if="pageCount > 1" class="mt-4 hidden text-[0.8125rem] text-mist-400 lg:block">
+        مجموعة {{ page + 1 }} من {{ pageCount }}
       </p>
     </div>
   </div>
@@ -170,24 +171,25 @@ watch(index, (i) => {
     transform 1.1s var(--ease-out-soft);
 }
 
+/* Right-to-left: the next image enters from the left. */
 .slide-next-enter-from {
-  opacity: 0;
-  transform: translateX(4%) scale(1.04);
-}
-
-.slide-prev-enter-from {
   opacity: 0;
   transform: translateX(-4%) scale(1.04);
 }
 
+.slide-prev-enter-from {
+  opacity: 0;
+  transform: translateX(4%) scale(1.04);
+}
+
 .slide-next-leave-to {
   opacity: 0;
-  transform: translateX(-3%);
+  transform: translateX(3%);
 }
 
 .slide-prev-leave-to {
   opacity: 0;
-  transform: translateX(3%);
+  transform: translateX(-3%);
 }
 
 .thumbs {
