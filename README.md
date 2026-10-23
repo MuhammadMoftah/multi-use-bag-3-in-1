@@ -1,46 +1,19 @@
-# Astro Starter Kit: Basics
+# Eloura — شنطة السفر الترند 3 في 1
+
+Arabic (RTL) product landing page for the Eloura 3-in-1 Convertible Travel Garment Duffel Bag.
+Astro 7 + Vue 3 + Tailwind CSS v4, static output.
 
 ```sh
-npm create astro@latest -- --template basics
+npm install
+astro dev --background     # http://localhost:4321  (astro dev stop | status | logs)
+npm run build              # dist/
+npm run preview
+node scripts/prepare-product-images.mjs   # regenerate image crops
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+- Content and configuration: `src/content/eloura-travel-bag.content.js`
+- Images: `src/content/eloura-travel-bag.media.js`
+- Docs: [`docs/PROJECT_MAP.md`](docs/PROJECT_MAP.md), [`docs/ASSET_CATALOG.md`](docs/ASSET_CATALOG.md), [`docs/AI_AGENT_GUIDE.md`](docs/AI_AGENT_GUIDE.md)
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
-
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Before launch, set `commerce.checkoutUrl` (EasyOrders), `commerce.price`, store/policy URLs, analytics IDs
+and `site` in `astro.config.mjs`. See the agent guide.
