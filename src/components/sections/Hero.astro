@@ -16,9 +16,9 @@ const image = travelBagImages.hero;
       src={image.src}
       alt={image.alt}
       formats={['avif', 'webp']}
-      widths={[480, 720, 960, 1280, 1600]}
+      widths={[480, 800, 1080, 1280, 1600]}
       sizes="(min-width: 64rem) 55vw, 100vw"
-      quality={60}
+      quality={45}
       priority
       class="media-fill animate-unveil object-[50%_62%] lg:object-[50%_72%]"
       pictureAttributes={{ class: 'contents' }}
@@ -28,8 +28,8 @@ const image = travelBagImages.hero;
   </div>
 
   <div class="container-x relative pb-20 lg:flex lg:min-h-[min(100svh,58rem)] lg:items-center lg:pt-44 lg:pb-24">
-    <div class="-mt-10 max-w-xl animate-settle sm:-mt-16 lg:mt-0 lg:w-[42%] lg:max-w-none">
-      <p class="eyebrow" lang="en" dir="ltr">{hero.eyebrow}</p>
+    <div class="-mt-4 max-w-xl animate-settle sm:-mt-10 lg:mt-0 lg:w-[42%] lg:max-w-none">
+      <p class="eyebrow" lang="en">{hero.eyebrow}</p>
       <h1 id="hero-title" class="display-1 mt-7 text-[clamp(2.4rem,1.5rem+2.9vw,4.25rem)]">
         {hero.heading}
         <span class="italic-accent mt-4 block">{hero.accent}</span>

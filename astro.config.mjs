@@ -46,9 +46,9 @@ export default defineConfig({
     // generic fallbacks live here (a generic family earlier in the stack would catch Arabic).
     {
       provider: fontProviders.google(),
-      name: 'Amiri',
-      cssVariable: '--font-amiri',
-      weights: [400],
+      name: 'Markazi Text',
+      cssVariable: '--font-markazi',
+      weights: [500],
       styles: ['normal'],
       subsets: ['arabic'],
       fallbacks: ['Georgia', 'serif'],

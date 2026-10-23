@@ -42,7 +42,7 @@ const ogImageUrl = Astro.site && ogImage ? new URL(ogImage, Astro.site).href : u
     {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
     <meta name="generator" content={Astro.generator} />
     <script is:inline>document.documentElement.classList.add('js');</script>
-    <Font cssVariable="--font-amiri" preload />
+    <Font cssVariable="--font-markazi" preload />
     <Font cssVariable="--font-plex-arabic" preload={[{ weight: '400', style: 'normal' }]} />
     <Font cssVariable="--font-cormorant" preload={[{ weight: '500', style: 'normal' }]} />
     <Font cssVariable="--font-manrope" />
