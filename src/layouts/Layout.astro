@@ -50,6 +50,7 @@ const ogImageUrl = Astro.site && ogImage ? new URL(ogImage, Astro.site).href : u
     <Analytics />
   </head>
   <body>
+    <Analytics placement="body" />
     <a
       href="#main"
       class="fixed start-3 top-3 z-[70] -translate-y-24 rounded-full bg-champagne-300 px-5 py-3 text-sm font-semibold text-night-900 transition-transform focus:translate-y-0"

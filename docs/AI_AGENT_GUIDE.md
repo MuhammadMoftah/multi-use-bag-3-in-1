@@ -50,12 +50,25 @@ section by `src/components/video/ProductVideo.vue` (`client:visible`).
 
 ## Analytics events
 
-| Event | Meta | GA4 | Trigger |
+Meta Pixel `1595918095042367` is live (`analytics.metaPixelId`). `src/components/Analytics.astro` renders
+the official base code verbatim (`is:inline`, not bundled) in `<head>`, wrapped so it runs after the
+window `load` event (via `requestIdleCallback`, 3 s timeout); the `<noscript>` image is at the
+top of `<body>` (`<Analytics placement="body" />` in `Layout.astro`). The root `/` redirect page has no
+Pixel, so a visit to `/` records one PageView (on the product page). No client-side routing exists.
+
+| Event | Meta | GA4 (inactive, ID null) | Trigger |
 | --- | --- | --- | --- |
-| Page view | `PageView` | config page_view | Tag load |
-| Product view | `ViewContent` | `view_item` | Once per page load |
-| Checkout start | `InitiateCheckout` | `begin_checkout` | First click on any `a[data-checkout]` (once per page) |
-| Purchase | — | — | **Never fired here.** Must come from EasyOrders after a confirmed order |
+| Page view | `PageView` | config page_view | Tag load, once per page load |
+| Product view | not sent (phase 2) | `view_item` | Once per page load |
+| Checkout start | not sent (phase 2) | `begin_checkout` | First click on any `a[data-checkout]` |
+| Purchase | **never from this site** | — | Must come from EasyOrders after an order is actually created |
+
+Meta's *automatic events* (Events Manager → dataset settings) send `SubscribedButtonClick` when a CTA is
+clicked unless disabled there; this is Meta-side configuration, not site code (the owner disables it in
+Events Manager).
+
+Headless browsers (Lighthouse, CI) load the Pixel but Meta does not send `/tr` hits from them; test
+event delivery in a normal browser.
 
 ## RTL and Arabic conventions
 
@@ -83,4 +96,7 @@ section by `src/components/video/ProductVideo.vue` (`client:visible`).
 - Every `a[data-checkout]` href equals `commerce.checkoutUrl`; no `href="#order"` purchase links remain.
 - Video: no `.mp4` request before scrolling to it; plays in view, pauses out of view, honours reduced motion.
   Test playback in a normal (non-headless) browser: headless Edge pauses muted video on its own.
-- If analytics are configured: InitiateCheckout fires once on click; no Purchase event.
+- Meta Pixel: exactly one `fbevents.js`, one `fbq('init')`, one PageView; no Purchase on CTA click.
+- Lighthouse with the deferred Pixel (production build, local): mobile 92 / 100 / 79 / 100 (LCP 2.9 s,
+  TBT 150–170 ms), desktop 100 / 100 / 78 / 100. Best Practices is capped by Meta's third-party cookie
+  and the issues it logs. Loading the base code eagerly measured mobile Performance 75–87.

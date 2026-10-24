@@ -39,9 +39,10 @@ export const commerce = {
   currency: 'EGP',
 };
 
-/** Tracking IDs. Nothing is loaded or fired while these are null. */
+/** Tracking IDs (public, not secrets). Nothing is loaded or fired while an ID is null. */
 export const analytics = {
-  metaPixelId: null,
+  /** Meta Pixel (dataset) ID, shared with the EasyOrders store. */
+  metaPixelId: '1595918095042367',
   ga4MeasurementId: null,
 };
 
