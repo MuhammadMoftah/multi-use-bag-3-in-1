@@ -12,18 +12,41 @@ See `docs/PROJECT_MAP.md` for structure and `docs/ASSET_CATALOG.md` for images.
   Never guarantee airline cabin acceptance.
 - Do not restyle: keep the palette, type scale, masks, spacing and animations. This is a content site on an existing design.
 
-## Configuration (all `null` until verified)
+## Purchase flow
+
+All purchase CTAs render through `src/components/ui/OrderLink.astro` and link (same tab) to
+`commerce.checkoutUrl`, the live EasyOrders product page:
+`https://elouravtx.myeasyorders.com/products/shnth-alsfr-altrnd`. EasyOrders handles cart, checkout and
+payment; this site has no order form, API or payment code. To change the URL, edit `commerce.checkoutUrl`
+only. Never hard-code the URL in a component, and use `OrderLink` for any new buy button so it keeps
+`data-checkout` (analytics).
+
+CTAs: header + floating nav + mobile menu, hero, product details, How it works (under the video),
+specifications, order section, footer.
+
+## Configuration (`null` until verified)
 
 | Setting | Location | Effect when set |
 | --- | --- | --- |
-| `commerce.checkoutUrl` | content file | Every purchase CTA (`OrderLink`) points to it, gets `data-checkout`, the order panel shows the live button, and the "how do I order" FAQ appears |
-| `commerce.price` / `compareAtPrice` | content file | Price shown in specs bar and order section; `Offer` added to JSON-LD (only when price **and** checkout URL exist). `compareAtPrice` is not rendered: no discount display without a verified offer |
+| `commerce.price` / `compareAtPrice` | content file | Price shown in specs bar and order section; `Offer` added to JSON-LD. `compareAtPrice` is not rendered: no discount display without a verified offer |
 | `analytics.metaPixelId` / `ga4MeasurementId` | content file | `Analytics.astro` injects the tag(s) |
-| `store.url`, `contactUrl`, `shippingPolicyUrl`, `returnsPolicyUrl`, `privacyPolicyUrl`, `termsUrl` | content file | Brand link and footer policy links appear |
+| `contactUrl`, `shippingPolicyUrl`, `returnsPolicyUrl`, `privacyPolicyUrl`, `termsUrl` | content file (`store`) | Footer policy links appear (`store.url` is set to the EasyOrders storefront and shown in the brand section) |
 | `site` | `astro.config.mjs` | Enables canonical URL, `og:url`, `og:image`/`twitter:image` and absolute JSON-LD image/url |
 
-Without a checkout URL, CTAs scroll to `#order`, which shows "الطلب أونلاين هيتاح قريب" and a disabled
-button (plus an English note visible only in `astro dev`). There is no fake order form or API.
+## Product video
+
+`src/assets/imgs/video-1.mp4` (owner-supplied, H.264 + AAC, 720 × 1280, 23.9 s, ≈7.7 MB, "fast start")
+is imported with `?url` in `eloura-travel-bag.media.js` (`productVideo`) and shown in the How it works
+section by `src/components/video/ProductVideo.vue` (`client:visible`).
+
+- The poster (`src/assets/eloura/video-poster.jpg`, frame at 12.6 s) is a lazy `<Image>` *behind* the
+  video, not a `poster` attribute, which browsers fetch eagerly and which cost mobile LCP.
+- `preload="none"`: no video bytes load until the player is in view. It then plays muted + looped +
+  `playsinline` while at least 35 % visible and pauses when scrolled away.
+- `prefers-reduced-motion: reduce`: never autoplays; a play button starts it.
+- Controls: play/pause and mute/unmute (Arabic labels). Once the visitor pauses, it won't auto-resume.
+  Without JavaScript the native `controls` are shown instead.
+- Fixed 9:16 frame and `width`/`height` attributes, so no layout shift.
 
 ## Analytics events
 
@@ -55,6 +78,9 @@ button (plus an English note visible only in `astro dev`). There is no fake orde
 
 - `npm run build` passes; no references to Solana/ORA remain (`rg -i "solana|ora " src`).
 - Check 390 px and 1440 px widths: no horizontal scroll, no broken images, no console errors.
-- Lighthouse mobile and desktop (report measured numbers only). Last measured, production build:
-  mobile 95 / 100 / 100 / 100 (LCP 2.9 s, CLS 0), desktop 100 / 100 / 100 / 100 (LCP 0.6 s).
-- If checkout or analytics are configured: CTAs carry `data-checkout`; InitiateCheckout fires once on click; no Purchase event.
+- Lighthouse mobile and desktop (report measured numbers only). Last measured, production build with the video:
+  mobile 94 / 100 / 100 / 100 (LCP 2.9 s, CLS 0), desktop 100 / 100 / 100 / 100 (LCP 0.6 s).
+- Every `a[data-checkout]` href equals `commerce.checkoutUrl`; no `href="#order"` purchase links remain.
+- Video: no `.mp4` request before scrolling to it; plays in view, pauses out of view, honours reduced motion.
+  Test playback in a normal (non-headless) browser: headless Edge pauses muted video on its own.
+- If analytics are configured: InitiateCheckout fires once on click; no Purchase event.

@@ -312,12 +312,6 @@
     }
   }
 
-  .btn[aria-disabled="true"] {
-    cursor: not-allowed;
-    opacity: 0.55;
-    pointer-events: none;
-  }
-
   .btn-solid {
     border-color: var(--color-champagne-300);
     background: var(--color-champagne-300);

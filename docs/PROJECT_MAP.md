@@ -23,14 +23,15 @@ src/
   content/
     eloura-travel-bag.content.js   ALL copy, specs, CTAs, SEO, config (single source of truth)
     eloura-travel-bag.media.js     image manifest: imports, Arabic alt, roles, gallery order
-  lib/content.js            re-exports content + derived helpers (orderHref, hasCheckout, faqItems, formatPrice, pad2)
+  lib/content.js            re-exports content + derived helpers (orderHref, faqItems, formatPrice, pad2)
   layouts/Layout.astro      <html lang="ar" dir="rtl">, meta/OG/Twitter, fonts, analytics, skip link
   pages/3-in-1-travel-garment-duffel-bag.astro   section order, OG image, Product/FAQPage/WebPage JSON-LD
   components/
     SiteHeader.astro        header, floating nav, mobile menu (inline script)
     SiteFooter.astro
     Analytics.astro         Meta Pixel / GA4 (renders nothing until IDs are configured)
-    gallery/GalleryShowcase.vue   the only hydrated island (client:visible)
+    gallery/GalleryShowcase.vue   gallery island (client:visible)
+    video/ProductVideo.vue        product video player island (client:visible), used in HowItWorks
     sections/               one file per page section (below)
     ui/                     Icon, OrderLink, PalmFrond, SectionHeading, Wordmark
   scripts/reveal.ts         scroll-reveal / active-nav observer

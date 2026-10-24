@@ -4,7 +4,7 @@ import PalmFrond from '../ui/PalmFrond.astro';
 import Icon from '../ui/Icon.astro';
 import OrderLink from '../ui/OrderLink.astro';
 import { travelBagImages } from '../../content/eloura-travel-bag.media.js';
-import { content, hasCheckout, formatPrice } from '../../lib/content.js';
+import { content, formatPrice } from '../../lib/content.js';
 
 const { order, ctas, product, packageContents } = content;
 const price = formatPrice();
@@ -58,25 +58,8 @@ const thumb = travelBagImages.orderThumb;
       </div>
 
       <div class="hairline mt-12 flex flex-col gap-6 border-t pt-8 md:flex-row md:items-center md:justify-between">
-        <div class="max-w-xl space-y-2">
-          <p class="text-sm text-mist-300">{hasCheckout ? order.checkoutNote : order.unavailableNote}</p>
-          {
-            !hasCheckout && import.meta.env.DEV && (
-              <p class="source-note" lang="en" dir="ltr">
-                Dev note: set <code>commerce.checkoutUrl</code> in src/content/eloura-travel-bag.content.js to enable ordering.
-              </p>
-            )
-          }
-        </div>
-        {
-          hasCheckout ? (
-            <OrderLink class="btn btn-solid shrink-0">{ctas.order}</OrderLink>
-          ) : (
-            <span class="btn shrink-0" role="link" aria-disabled="true">
-              {ctas.unavailable}
-            </span>
-          )
-        }
+        <p class="max-w-xl text-sm text-mist-300">{order.checkoutNote}</p>
+        <OrderLink class="btn btn-solid shrink-0">{ctas.order}</OrderLink>
       </div>
     </div>
   </div>

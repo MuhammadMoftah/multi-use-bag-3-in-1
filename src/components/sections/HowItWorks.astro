@@ -2,12 +2,13 @@
 import { Image } from 'astro:assets';
 import SectionHeading from '../ui/SectionHeading.astro';
 import PalmFrond from '../ui/PalmFrond.astro';
-import { travelBagImages } from '../../content/eloura-travel-bag.media.js';
+import OrderLink from '../ui/OrderLink.astro';
+import ProductVideo from '../video/ProductVideo.vue';
+import { travelBagImages, productVideo } from '../../content/eloura-travel-bag.media.js';
 import { content, pad2 } from '../../lib/content.js';
 
-const { howItWorks } = content;
-const stepImages: Record<string, any> = travelBagImages.howItWorks;
----
+const { howItWorks, ctas } = content;
+const stepImages: Record<string, any> = travelBagImages.howItWorks;---
 
 <section id="how-it-works" class="section overflow-hidden" aria-labelledby="how-title">
   <PalmFrond class="decor-frond top-[38%] -right-40 w-[30rem] rotate-12 -scale-x-100 opacity-70 max-lg:hidden" />
@@ -57,19 +58,52 @@ const stepImages: Record<string, any> = travelBagImages.howItWorks;
       }
     </ol>
 
-    <div class="mx-auto mt-24 grid max-w-5xl gap-x-16 gap-y-16 sm:mt-28 md:grid-cols-2 md:gap-y-20">
-      {
-        howItWorks.steps.map((step: any, index: number) => (
-          <article class="relative ps-14 pt-10 sm:ps-20" data-reveal style={`--reveal-delay:${(index % 2) * 120}`}>
-            <span class="ghost-numeral" aria-hidden="true">
-              {index + 1}
-            </span>
-            <p class="label relative text-champagne-500">{pad2(index)}</p>
-            <h3 class="heading-3 relative mt-3">{step.title}</h3>
-            <p class="relative mt-4 max-w-sm text-[0.95rem] leading-relaxed text-mist-300">{step.description}</p>
-          </article>
-        ))
-      }
+    <div class="mx-auto mt-24 grid max-w-5xl items-center gap-x-16 gap-y-16 sm:mt-28 md:grid-cols-[minmax(0,20rem)_1fr] lg:grid-cols-[minmax(0,23rem)_1fr] lg:gap-x-24">
+      <figure class="mx-auto w-full max-w-[20rem] md:max-w-none" data-reveal="scale">
+        <div class="relative rounded-[999px_999px_1.75rem_1.75rem] border border-champagne-300/30 p-1.5">
+          <div class="shape-arch relative aspect-[9/16] bg-night-800">
+            <Image
+              src={productVideo.poster}
+              alt=""
+              widths={[360, 540, 720]}
+              sizes="(min-width: 64rem) 23rem, (min-width: 48rem) 20rem, min(20rem, 100vw)"
+              quality={60}
+              class="media-fill"
+            />
+            <ProductVideo
+              client:visible
+              src={productVideo.src}
+              width={productVideo.width}
+              height={productVideo.height}
+              label={productVideo.alt}
+            />
+          </div>
+        </div>
+        <figcaption class="mt-6 text-center">
+          <span class="label text-champagne-500">{howItWorks.video.label}</span>
+          <span class="mt-2 block text-[0.9rem] leading-relaxed text-mist-300">{howItWorks.video.caption}</span>
+        </figcaption>
+      </figure>
+
+      <div>
+        <div class="grid gap-x-12 gap-y-12 sm:grid-cols-2 md:grid-cols-1 md:gap-y-10">
+          {
+            howItWorks.steps.map((step: any, index: number) => (
+              <article class="relative ps-14 pt-10 sm:ps-20" data-reveal style={`--reveal-delay:${(index % 2) * 120}`}>
+                <span class="ghost-numeral" aria-hidden="true">
+                  {index + 1}
+                </span>
+                <p class="label relative text-champagne-500">{pad2(index)}</p>
+                <h3 class="heading-3 relative mt-3">{step.title}</h3>
+                <p class="relative mt-4 max-w-sm text-[0.95rem] leading-relaxed text-mist-300">{step.description}</p>
+              </article>
+            ))
+          }
+        </div>
+        <div class="mt-12 max-sm:text-center sm:ps-20" data-reveal>
+          <OrderLink class="btn btn-solid">{ctas.primary}</OrderLink>
+        </div>
+      </div>
     </div>
 
     <p class="source-note mx-auto mt-20 max-w-5xl text-center" data-reveal>{howItWorks.note}</p>

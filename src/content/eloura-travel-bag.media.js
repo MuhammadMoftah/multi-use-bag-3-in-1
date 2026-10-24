@@ -29,6 +29,8 @@ import creamCouple from '../assets/eloura/cream-couple.jpg';
 import creamTrolley from '../assets/eloura/cream-trolley.jpg';
 import openBlazer from '../assets/eloura/open-blazer.jpg';
 import packedOpen from '../assets/eloura/packed-open.jpg';
+import videoPoster from '../assets/eloura/video-poster.jpg';
+import productVideoUrl from '../assets/imgs/video-1.mp4?url';
 
 const media = {
   heroLifestyle: {
@@ -163,6 +165,19 @@ export const travelBagImages = {
   },
   orderThumb: media.studioBlackCognac,
   ogImage: media.studioBlackCognac,
+};
+
+/**
+ * Owner-supplied product demo (H.264 + AAC, 720 × 1280, 23.9 s, burned-in Arabic
+ * captions). Served as-is; the poster is the frame at 12.6 s.
+ */
+export const productVideo = {
+  src: productVideoUrl,
+  poster: videoPoster,
+  width: 720,
+  height: 1280,
+  alt: 'فيديو بيوري شنطة السفر 3 في 1 وهي مفرودة كشنطة ملابس، وترتيب الهدوم والجزم فيها، وبعدين قفلها وشيلها',
+  source: 'video-1.mp4',
 };
 
 /** Curated gallery order (featured image + thumbnails). */

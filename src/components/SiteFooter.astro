@@ -1,5 +1,6 @@
 ---
 import Wordmark from './ui/Wordmark.astro';
+import OrderLink from './ui/OrderLink.astro';
 import { content } from '../lib/content.js';
 import type { NavItem } from './SiteHeader.astro';
 
@@ -8,7 +9,7 @@ interface Props {
 }
 
 const { items } = Astro.props;
-const { store, product, footer } = content;
+const { store, product, footer, ctas } = content;
 const storeLinks = footer.links
   .map((link: any) => ({ label: link.label, href: (store as Record<string, string | null>)[link.key] }))
   .filter((link: any) => link.href);
@@ -24,7 +25,7 @@ const year = new Date().getFullYear();
     <nav aria-label="روابط الفوتر" class="mt-10">
       <ul class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
         {
-          [...items, { href: '#order', label: 'اطلبي' }].map((item) => (
+          items.map((item) => (
             <li>
               <a href={item.href} class="link-underline inline-flex min-h-11 items-center px-3 text-[0.875rem] text-mist-200 hover:text-champagne-100">
                 {item.label}
@@ -32,6 +33,11 @@ const year = new Date().getFullYear();
             </li>
           ))
         }
+        <li>
+          <OrderLink class="link-underline inline-flex min-h-11 items-center px-3 text-[0.875rem] text-champagne-300 hover:text-champagne-100" arrow={false}>
+            {ctas.header}
+          </OrderLink>
+        </li>
       </ul>
     </nav>
 

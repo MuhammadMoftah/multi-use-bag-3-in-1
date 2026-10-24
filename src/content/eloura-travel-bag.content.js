@@ -15,7 +15,7 @@ export const store = {
   name: 'Eloura',
   tagline: 'Travel Essentials',
   /** Public storefront home (EasyOrders). */
-  url: null,
+  url: 'https://elouravtx.myeasyorders.com',
   /** Customer support channel, e.g. a WhatsApp or contact page URL. */
   contactUrl: null,
   shippingPolicyUrl: null,
@@ -25,14 +25,13 @@ export const store = {
 };
 
 /**
- * Purchase configuration. When `checkoutUrl` is set every purchase CTA links to
- * it; otherwise CTAs scroll to the order section, where the action is shown as
- * unavailable. No order is ever created on this site.
+ * Purchase configuration. Every purchase CTA links to `checkoutUrl` (the live
+ * EasyOrders product page); EasyOrders handles cart, checkout and payment.
  */
 export const commerce = {
   platform: 'EasyOrders',
-  /** Verified EasyOrders product/checkout page URL. */
-  checkoutUrl: null,
+  /** Live EasyOrders product page. */
+  checkoutUrl: 'https://elouravtx.myeasyorders.com/products/shnth-alsfr-altrnd',
   /** Selling price in EGP (number). Leave null until confirmed. */
   price: null,
   /** Only set when a genuine previous price exists. */
@@ -103,7 +102,6 @@ export const ctas = {
   explore: 'اكتشفي المميزات',
   header: 'اطلبي دلوقتي',
   order: 'اطلبي شنطة السفر الترند دلوقتي',
-  unavailable: 'الطلب أونلاين هيتاح قريب',
 };
 
 export const hero = {
@@ -159,7 +157,11 @@ export const howItWorks = {
       description: 'اقفلي السحّابات واختاري: في إيدك، على كتفك أو كروس بالحزام القابل للتعديل.',
     },
   ],
-  note: 'الصور من صور المنتج للتوضيح، واللون المتاح بيكون حسب المخزون.',
+  video: {
+    label: 'شوفيها وهي بتتحول',
+    caption: 'من شنطة ملابس مفرودة لشنطة سفر مقفولة وجاهزة للحركة.',
+  },
+  note: 'الصور والفيديو من صور المنتج للتوضيح، واللون المتاح بيكون حسب المخزون.',
 };
 
 export const details = {
@@ -349,7 +351,6 @@ export const faq = {
     {
       question: 'أطلب إزاي؟',
       answer: 'اضغطي على «اطلبي شنطتك دلوقتي» وكمّلي طلبك من صفحة المنتج في متجر Eloura. السعر والشحن والألوان المتاحة بتظهر هناك قبل تأكيد الطلب.',
-      requiresCheckout: true,
     },
   ],
 };
@@ -361,7 +362,6 @@ export const order = {
   contentsTitle: 'في العلبة',
   priceLabel: 'السعر',
   checkoutNote: 'هتكملي الطلب في صفحة المنتج على متجر Eloura، وهتشوفي السعر والشحن والألوان المتاحة قبل التأكيد.',
-  unavailableNote: 'الطلب أونلاين من الصفحة دي لسه مش متاح.',
 };
 
 export const footer = {

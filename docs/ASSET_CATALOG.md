@@ -39,6 +39,16 @@ Role assignments live in `travelBagImages` and the gallery sequence in `galleryO
 (`src/content/eloura-travel-bag.media.js`). Each entry carries Arabic `alt`, a `caption`, the `source`
 filename and an optional `object-position`.
 
+## Video
+
+| File | Details | Used for |
+| --- | --- | --- |
+| `src/assets/imgs/video-1.mp4` | Owner-supplied demo, H.264 + AAC, 720 × 1280, 23.9 s, ≈7.7 MB, moov at start (streams immediately). Burned-in Arabic captions "اشتري دلوقتي! شنطة السفر العملية الترند". Shows unfolding to garment mode, packing clothes and shoes, folding back into the duffel, carrying | How it works section (`ProductVideo.vue`), served unmodified |
+| `src/assets/eloura/video-poster.jpg` | Frame at 12.6 s (unfolded, packed with clothes), 720 × 1280, extracted in the browser via canvas | Lazy poster image behind the video |
+
+The video is not re-encoded (no ffmpeg in the toolchain). If a smaller file is supplied later, keep it
+H.264 MP4 with "faststart" and replace the file in place.
+
 ## Originals not used directly
 
 | File | Reason |
@@ -50,8 +60,6 @@ filename and an optional `object-position`.
 | `Luxury Black Duffel Feature Showcase.png` | Text-heavy infographic |
 | `Spacious Storage Travel Duffel Infographic.png` | Capacity claims |
 | `Travel in Style_ The Ultimate Weekender.png` | Baked-in headline; the hero source is a 4× upscale of it |
-| `video-1.mp4` (≈8 MB) | Not reviewed (no ffmpeg available); unused |
-
 ## Delivery
 
 Images are optimized at build time by `astro:assets` (`<Picture>` with AVIF/WebP, `<Image>`, `getImage`).

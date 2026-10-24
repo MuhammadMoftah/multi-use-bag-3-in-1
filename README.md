@@ -15,5 +15,5 @@ node scripts/prepare-product-images.mjs   # regenerate image crops
 - Images: `src/content/eloura-travel-bag.media.js`
 - Docs: [`docs/PROJECT_MAP.md`](docs/PROJECT_MAP.md), [`docs/ASSET_CATALOG.md`](docs/ASSET_CATALOG.md), [`docs/AI_AGENT_GUIDE.md`](docs/AI_AGENT_GUIDE.md)
 
-Before launch, set `commerce.checkoutUrl` (EasyOrders), `commerce.price`, store/policy URLs, analytics IDs
-and `site` in `astro.config.mjs`. See the agent guide.
+Purchase CTAs link to the live EasyOrders product page (`commerce.checkoutUrl`). Still to configure when
+available: `commerce.price`, policy/contact URLs, analytics IDs and `site` in `astro.config.mjs`. See the agent guide.
