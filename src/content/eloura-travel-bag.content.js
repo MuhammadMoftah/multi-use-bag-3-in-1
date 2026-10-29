@@ -41,8 +41,8 @@ export const commerce = {
 
 /** Tracking IDs (public, not secrets). Nothing is loaded or fired while an ID is null. */
 export const analytics = {
-  /** Meta Pixel (dataset) ID, shared with the EasyOrders store. */
-  metaPixelId: '1595918095042367',
+  /** Meta Pixel (dataset) ID — Eloura | Website Pixel. */
+  metaPixelId: '4460772997566697',
   ga4MeasurementId: null,
 };
 

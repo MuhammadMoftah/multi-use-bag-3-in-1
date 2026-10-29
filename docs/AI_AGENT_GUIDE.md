@@ -50,7 +50,7 @@ section by `src/components/video/ProductVideo.vue` (`client:visible`).
 
 ## Analytics events
 
-Meta Pixel `1595918095042367` is live (`analytics.metaPixelId`). `src/components/Analytics.astro` renders
+Meta Pixel `4460772997566697` (Eloura | Website Pixel) is live (`analytics.metaPixelId`). `src/components/Analytics.astro` renders
 the official base code verbatim (`is:inline`, not bundled) in `<head>`, wrapped so it runs after the
 window `load` event (via `requestIdleCallback`, 3 s timeout); the `<noscript>` image is at the
 top of `<body>` (`<Analytics placement="body" />` in `Layout.astro`). The root `/` redirect page has no
