@@ -1,0 +1,90 @@
+---
+/**
+ * Editorial spotlight on the featured product (`featured: true` in the
+ * registry, else the first product). Uses gallery images the hero and the
+ * product card don't already show, so a one-product collection still tells a
+ * different story here.
+ */
+import { Image } from 'astro:assets';
+import Icon from '../ui/Icon.astro';
+import { home } from '../../data/home';
+import { featuredProduct as product, leadImage, type ProductImage } from '../../products';
+
+const { featured: copy } = home;
+const used = product ? [product.cover.src.src, leadImage(product).src.src] : [];
+const pool = product ? [...(product.highlightImages ?? []), ...product.gallery] : [];
+const images: ProductImage[] = [];
+for (const image of pool) {
+  if (images.length === 3) break;
+  if (image.fit === 'contain' || used.includes(image.src.src) || images.some((entry) => entry.src.src === image.src.src)) continue;
+  images.push(image);
+}
+if (product && images.length === 0) images.push(leadImage(product));
+const [main, ...rest] = images;
+const position = (image: ProductImage) => (image.position ? `object-position:${image.position}` : undefined);
+---
+
+{
+  product && main && (
+    <section id="featured" class="section section-tint overflow-hidden" aria-labelledby="featured-title">
+      <span class="backdrop-word end-[-2%] top-10 hidden text-[clamp(8rem,14vw,14rem)] lg:block" aria-hidden="true" lang="en">
+        {copy.eyebrowEn.toUpperCase()}
+      </span>
+      <div class="container-x relative grid gap-14 lg:grid-cols-12 lg:items-center lg:gap-16">
+        <div class="lg:col-span-5">
+          <p class="eyebrow" data-reveal>
+            {copy.eyebrow}
+          </p>
+          <p class="mt-6" data-reveal style="--reveal-delay:60">
+            <span class="tag">{product.category}</span>
+          </p>
+          <h2 id="featured-title" class="heading-2 mt-6" data-reveal style="--reveal-delay:120">
+            {product.name}
+          </h2>
+          <p class="label mt-4 text-bone-500" lang="en" data-reveal style="--reveal-delay:160">
+            {product.nameEn}
+          </p>
+          <p class="lead mt-7" data-reveal style="--reveal-delay:200">
+            {copy.description}
+          </p>
+          <div class="mt-10" data-reveal style="--reveal-delay:260">
+            <a href={product.route} class="btn btn-solid min-h-13 px-9" data-track="product-card" data-product-id={product.id} data-product-name={product.nameEn}>
+              {copy.cta}
+              <Icon name="arrow" class="btn-arrow" />
+            </a>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-12 gap-4 sm:gap-6 lg:col-span-7">
+          <figure class:list={[rest.length ? 'col-span-7' : 'col-span-12 sm:col-span-10 sm:col-start-2']}>
+            <div class="frame hover-zoom aspect-[3/4]" data-reveal="image">
+              <div class="absolute inset-[-8%_0]" data-drift style="--drift:1.5rem">
+                <Image src={main.src} alt={main.alt} widths={[400, 640, 900]} sizes="(min-width: 64rem) 26rem, 58vw" quality={62} class="media-fill" style={position(main)} />
+              </div>
+            </div>
+            {main.caption && <figcaption class="meta mt-3">{main.caption}</figcaption>}
+          </figure>
+
+          {
+            rest.length > 0 && (
+              <div class="col-span-5 flex flex-col gap-4 pt-16 sm:gap-6 sm:pt-24">
+                {rest.map((image, index) => (
+                  <figure>
+                    <div
+                      class:list={['hover-zoom', index === 0 ? 'frame aspect-[4/5]' : 'shape-circle relative border border-white/10']}
+                      data-reveal="image"
+                      style={`--reveal-delay:${160 + index * 140}`}
+                    >
+                      <Image src={image.src} alt={image.alt} widths={[320, 480, 640]} sizes="(min-width: 64rem) 18rem, 40vw" quality={62} class="media-fill" style={position(image)} />
+                    </div>
+                    {image.caption && <figcaption class="meta mt-3">{image.caption}</figcaption>}
+                  </figure>
+                ))}
+              </div>
+            )
+          }
+        </div>
+      </div>
+    </section>
+  )
+}

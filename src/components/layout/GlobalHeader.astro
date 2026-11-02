@@ -1,0 +1,241 @@
+---
+/**
+ * Global brand navigation, shared by the homepage and every product page.
+ * Fixed and compact: transparent over the hero, a glass pill once scrolled,
+ * hidden while scrolling down and back on scroll up. On the homepage its
+ * links double as section navigation (scroll spy); elsewhere they lead home.
+ */
+import Icon from '../ui/Icon.astro';
+import Wordmark from '../ui/Wordmark.astro';
+import { site, store, storeLinkLabel } from '../../data/site';
+import { products } from '../../products';
+import { globalNavLinks, isHomePath } from '../../lib/nav';
+
+const isHome = isHomePath(Astro.url.pathname);
+const links = globalNavLinks(isHome);
+const homeLabel = `${site.name} — الصفحة الرئيسية`;
+---
+
+<div id="global-nav">
+  <header id="site-header" class="site-header fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5">
+    <div class="header-bar mx-auto flex max-w-[76rem] items-center justify-between gap-3 rounded-full border border-transparent py-1.5 ps-4 pe-1.5 sm:ps-6">
+      <a href={isHome ? '#top' : '/'} class="shrink-0 py-1" aria-label={homeLabel}>
+        <Wordmark size="sm" />
+      </a>
+
+      <nav aria-label="التنقل الرئيسي" class="hidden md:block">
+        <ul class="flex items-center gap-0.5">
+          {
+            links.map((link) => (
+              <li>
+                <a href={link.href} class="nav-pill" data-spy={isHome ? '' : undefined}>
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <a href={store.url} class="btn hidden min-h-11 gap-2.5 px-5 md:inline-flex" data-track="store">
+          <Icon name="bag" class="size-4" />
+          {storeLinkLabel}
+        </a>
+        <button
+          type="button"
+          class="menu-toggle btn-round size-11 bg-ink-900/40 backdrop-blur-md md:hidden"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          data-requires-js
+        >
+          <span class="sr-only">فتح القائمة</span>
+          <Icon name="menu" class="size-5" />
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div
+    id="mobile-menu"
+    class="invisible fixed inset-0 z-[60] flex flex-col overflow-hidden bg-ink-950 opacity-0 transition-[opacity,visibility] duration-500 ease-out-soft data-[open]:visible data-[open]:opacity-100 data-[open]:transition-opacity md:hidden"
+    role="dialog"
+    aria-modal="true"
+    aria-label="قائمة الموقع"
+    inert
+  >
+    <span class="backdrop-word -bottom-6 -start-4 text-[clamp(7rem,30vw,14rem)]" aria-hidden="true" lang="en">ELOURA</span>
+    <div class="container-x relative flex items-center justify-between pt-5">
+      <Wordmark />
+      <button type="button" id="menu-close" class="btn-round">
+        <span class="sr-only">إغلاق القائمة</span>
+        <Icon name="close" class="size-5" />
+      </button>
+    </div>
+    <div class="container-x relative flex flex-1 flex-col justify-center gap-10 overflow-y-auto py-8">
+      <nav aria-label="قائمة الموبايل">
+        <ul>
+          {
+            links.map((link, index) => (
+              <li class="menu-item" style={`--i:${index}`}>
+                <a
+                  href={link.href}
+                  class="flex items-baseline gap-5 py-2 font-display text-[clamp(1.75rem,7vw,2.75rem)] leading-snug font-bold text-bone-100 transition-colors hover:text-white"
+                >
+                  <span class="font-sans text-[0.75rem] font-semibold tracking-[0.2em] text-bone-500" lang="en">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <nav aria-label="المنتجات" class="menu-item" style={`--i:${links.length}`}>
+        <p class="label text-bone-500">المنتجات</p>
+        <ul class="hairline mt-3 border-t">
+          {
+            products.map((product) => (
+              <li class="hairline border-b">
+                <a
+                  href={product.route}
+                  class="flex min-h-14 items-center justify-between gap-4 py-3 text-[1.0625rem] font-semibold text-bone-100"
+                  data-track="product-card"
+                  data-product-id={product.id}
+                  data-product-name={product.nameEn}
+                >
+                  {product.name}
+                  <Icon name="arrow" class="btn-arrow text-bone-500" />
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+    <div class="container-x relative pb-10">
+      <a href={store.url} class="btn btn-solid w-full sm:w-auto" data-track="store">
+        <Icon name="bag" class="size-4" />
+        {storeLinkLabel}
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .site-header {
+    transition: transform 0.6s var(--ease-out-soft);
+  }
+
+  .site-header[data-hidden] {
+    transform: translateY(-130%);
+  }
+
+  .header-bar {
+    transition:
+      background-color 0.5s var(--ease-out-soft),
+      border-color 0.5s var(--ease-out-soft),
+      box-shadow 0.5s var(--ease-out-soft),
+      margin 0.6s var(--ease-out-soft);
+  }
+
+  .site-header[data-scrolled] .header-bar {
+    border-color: rgb(242 240 235 / 0.16);
+    background-color: rgb(15 15 15 / 0.82);
+    box-shadow: 0 1.5rem 3rem -1.5rem rgb(0 0 0 / 0.6);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+  }
+
+  /* Sit inside the framed page panel until the page scrolls. */
+  @media (width >= 64rem) {
+    .site-header:not([data-scrolled]) .header-bar {
+      margin-top: 1.25rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .menu-item {
+      opacity: 0;
+      transform: translateY(1rem);
+      transition:
+        opacity 0.6s var(--ease-out-soft),
+        transform 0.7s var(--ease-out-soft);
+      transition-delay: calc(90ms + var(--i) * 45ms);
+    }
+
+    #mobile-menu[data-open] .menu-item {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  import { initScrollSpy } from '../../scripts/scroll-spy';
+
+  const header = document.getElementById('site-header')!;
+  const menu = document.getElementById('mobile-menu')!;
+  const closeButton = document.getElementById('menu-close')!;
+  const toggles = [...document.querySelectorAll<HTMLButtonElement>('.menu-toggle')];
+  let lastToggle: HTMLButtonElement | null = null;
+
+  // Scrolled / hidden states.
+  let lastY = scrollY;
+  let ticking = false;
+  const update = () => {
+    ticking = false;
+    const y = scrollY;
+    header.toggleAttribute('data-scrolled', y > 24);
+    const delta = y - lastY;
+    if (Math.abs(delta) < 8) return;
+    const hide = delta > 0 && y > 320 && !header.contains(document.activeElement) && !menu.hasAttribute('data-open');
+    header.toggleAttribute('data-hidden', hide);
+    lastY = y;
+  };
+  update();
+  addEventListener(
+    'scroll',
+    () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    },
+    { passive: true },
+  );
+  header.addEventListener('focusin', () => header.removeAttribute('data-hidden'));
+
+  initScrollSpy([...header.querySelectorAll<HTMLAnchorElement>('a[data-spy]')]);
+
+  // Mobile menu.
+  const setOpen = (open: boolean, restoreFocus = true) => {
+    menu.toggleAttribute('data-open', open);
+    menu.inert = !open;
+    header.inert = open;
+    document.querySelectorAll<HTMLElement>('body > :not(#global-nav, script, style)').forEach((el) => {
+      el.inert = open;
+    });
+    toggles.forEach((toggle) => toggle.setAttribute('aria-expanded', String(open)));
+    document.documentElement.style.overflow = open ? 'hidden' : '';
+    if (open) closeButton.focus();
+    else if (restoreFocus) lastToggle?.focus();
+  };
+
+  toggles.forEach((toggle) =>
+    toggle.addEventListener('click', () => {
+      lastToggle = toggle;
+      setOpen(true);
+    }),
+  );
+  closeButton.addEventListener('click', () => setOpen(false));
+  menu.addEventListener('click', (event) => {
+    if ((event.target as HTMLElement).closest('a')) setOpen(false, false);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && menu.hasAttribute('data-open')) setOpen(false);
+  });
+  matchMedia('(min-width: 48rem)').addEventListener('change', (event) => {
+    if (event.matches && menu.hasAttribute('data-open')) setOpen(false, false);
+  });
+</script>

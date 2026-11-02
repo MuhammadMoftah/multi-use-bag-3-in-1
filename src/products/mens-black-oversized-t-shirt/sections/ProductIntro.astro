@@ -1,0 +1,76 @@
+---
+import { Image } from 'astro:assets';
+import { tshirtImages } from '../media.js';
+import { content } from '../lib.js';
+
+const { intro } = content;
+const main = tshirtImages.productMain;
+const inset = tshirtImages.productInset;
+---
+
+<section id="product" class="section overflow-hidden" aria-labelledby="product-title">
+  <div class="container-x grid items-center gap-y-16 lg:grid-cols-2 lg:gap-x-20">
+    <div class="relative pb-[18%] lg:order-2">
+      <div class="frame hover-zoom aspect-[826/861] w-[86%]" data-reveal="image">
+        <Image src={main.src} alt={main.alt} widths={[480, 640, 826]} sizes="(min-width: 64rem) 34vw, 80vw" quality={65} class="media-fill" />
+      </div>
+      <div
+        class="shape-circle hover-zoom absolute end-0 bottom-0 w-[42%] border-[6px] border-ink-900"
+        data-reveal="scale"
+        style="--reveal-delay:200"
+      >
+        <Image
+          src={inset.src}
+          alt={inset.alt}
+          widths={[320, 480, 640]}
+          sizes="(min-width: 64rem) 18vw, 40vw"
+          quality={62}
+          class="media-fill"
+          style={inset.position ? `object-position:${inset.position}` : undefined}
+        />
+      </div>
+    </div>
+
+    <div>
+      <p class="eyebrow" data-reveal>{intro.eyebrow}</p>
+      <h2 id="product-title" class="heading-2 mt-6" data-reveal style="--reveal-delay:80">
+        {intro.heading}
+        <span class="heading-accent mt-4 block">{intro.accent}</span>
+      </h2>
+      {
+        intro.paragraphs.map((text: string, index: number) => (
+          <p class:list={['lead', index === 0 ? 'mt-8' : 'mt-5']} data-reveal style={`--reveal-delay:${140 + index * 40}`}>
+            {text}
+          </p>
+        ))
+      }
+
+      <dl class="hairline mt-12 flex flex-wrap gap-x-10 gap-y-8 border-t pt-8 sm:gap-x-14" data-reveal style="--reveal-delay:240">
+        {
+          intro.figures.map((figure: any) => (
+            <div>
+              <dt class="sr-only">{figure.detail}</dt>
+              <dd>
+                <span class="block font-display text-[clamp(1.5rem,1.1rem+1.4vw,2.25rem)] leading-none font-extrabold whitespace-nowrap text-bone-100">
+                  <span lang={figure.lang} dir={figure.lang ? 'ltr' : undefined}>{figure.value}</span>
+                  {figure.unit && (
+                    <span class="ms-1 font-sans text-[0.8125rem] font-medium text-bone-500">
+                      {figure.unit}
+                      {figure.starred && <sup aria-hidden="true">*</sup>}
+                    </span>
+                  )}
+                </span>
+                <span class="meta mt-3 block" aria-hidden="true">
+                  {figure.detail}
+                </span>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+      <p class="source-note mt-6" data-reveal>
+        <span aria-hidden="true">*</span>{intro.footnote}
+      </p>
+    </div>
+  </div>
+</section>

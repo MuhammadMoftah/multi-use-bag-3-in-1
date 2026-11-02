@@ -1,7 +1,9 @@
 ---
-/** Typographic Eloura wordmark (no official logo file has been supplied). */
+/** Typographic Eloura Showcase wordmark (no official logo file has been supplied). */
+import { site } from '../../data/site';
+
 interface Props {
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   class?: string;
 }
 
@@ -10,10 +12,11 @@ const sizes = {
   sm: 'text-[1.45rem]',
   md: 'text-[1.85rem]',
   lg: 'text-[2.5rem]',
+  xl: 'text-[clamp(3rem,2rem+4vw,5.5rem)]',
 };
 ---
 
 <span class:list={['inline-flex flex-col items-center leading-none', className]} lang="en" dir="ltr">
-  <span class:list={['font-display whitespace-nowrap text-champagne-300 italic', sizes[size]]}>Eloura</span>{' '}
-  <span class="mt-1 text-[0.55rem] font-semibold tracking-[0.32em] whitespace-nowrap text-champagne-500 uppercase">Travel Essentials</span>
+  <span class:list={['font-brand whitespace-nowrap text-bone-100 italic', sizes[size]]}>{site.brand}</span>{' '}
+  <span class="mt-1 text-[0.55rem] font-semibold tracking-[0.42em] whitespace-nowrap text-bone-500 uppercase">{site.tagline}</span>
 </span>

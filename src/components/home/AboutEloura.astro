@@ -1,0 +1,101 @@
+---
+/**
+ * Brand introduction: who Eloura is (manifesto) and what it offers (category
+ * index). The manifesto words brighten as they cross the viewport where scroll
+ * timelines are supported; elsewhere the text is simply shown.
+ */
+import Icon from '../ui/Icon.astro';
+import { brandCategories, home } from '../../data/home';
+import { site, store } from '../../data/site';
+import { pad2 } from '../../lib/format';
+
+const { about } = home;
+const words = about.statement.split(' ');
+---
+
+<section id="about" class="section overflow-hidden" aria-labelledby="about-title">
+  <div class="container-x">
+    <p class="eyebrow" data-reveal>{about.eyebrow}</p>
+    <h2 id="about-title" class="mt-8 max-w-[64rem] font-display text-[clamp(1.75rem,1.05rem+2.7vw,3.5rem)] leading-[1.45] font-bold text-bone-100">
+      {
+        words.map((word) => (
+          <>
+            {word === site.brand ? (
+              <span class="manifesto-word font-brand text-[1.2em] font-medium italic" lang="en">{word}</span>
+            ) : (
+              <span class="manifesto-word">{word}</span>
+            )}{' '}
+          </>
+        ))
+      }
+    </h2>
+
+    <div class="mt-16 grid gap-14 lg:mt-24 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-5">
+        <p class="lead" data-reveal>{about.description}</p>
+        <div class="mt-9" data-reveal style="--reveal-delay:100">
+          <a href={store.url} class="btn" data-track="store">
+            <Icon name="bag" class="size-4" />
+            {about.storeCta}
+          </a>
+        </div>
+      </div>
+
+      <div class="lg:col-span-7">
+        <h3 class="label text-bone-500" data-reveal>{about.categoriesTitle}</h3>
+        <ol class="hairline mt-6 border-t">
+          {
+            brandCategories.map((category, index) => (
+              <li class="category-row hairline group grid grid-cols-[auto_1fr_auto] items-baseline gap-x-5 border-b py-6 sm:gap-x-8 sm:py-7" data-reveal style={`--reveal-delay:${index * 80}`}>
+                <span class="font-display text-[0.75rem] font-bold tracking-[0.2em] text-bone-700" lang="en" aria-hidden="true">{pad2(index)}</span>
+                <span class="category-body min-w-0">
+                  <span class="block font-display text-[clamp(1.5rem,1.2rem+1.2vw,2.25rem)] leading-tight font-bold text-bone-100">{category.name}</span>
+                  <span class="meta mt-2 block text-[0.9375rem]">{category.description}</span>
+                </span>
+                <span class="category-en font-brand text-[clamp(1.25rem,1.1rem+0.6vw,1.75rem)] text-bone-700 italic" lang="en">{category.nameEn}</span>
+              </li>
+            ))
+          }
+        </ol>
+        <p class="meta mt-5" data-reveal>{about.categoriesNote}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .category-body,
+  .category-en {
+    transition:
+      transform 0.7s var(--ease-out-soft),
+      color 0.5s var(--ease-out-soft);
+  }
+
+  @media (hover: hover) {
+    .category-row:hover .category-en {
+      color: var(--color-bone-100);
+    }
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .category-row:hover .category-body {
+      transform: translateX(-0.5rem);
+    }
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .manifesto-word {
+        animation: manifesto-light linear both;
+        animation-timeline: view();
+        animation-range: cover 18% cover 42%;
+      }
+    }
+  }
+
+  @keyframes manifesto-light {
+    from {
+      opacity: 0.18;
+    }
+  }
+</style>

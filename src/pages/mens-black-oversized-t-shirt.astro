@@ -1,0 +1,113 @@
+---
+import { getImage } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import GlobalHeader from '../components/layout/GlobalHeader.astro';
+import SiteFooter from '../components/layout/SiteFooter.astro';
+import SectionDock from '../components/nav/SectionDock.astro';
+import Hero from '../products/mens-black-oversized-t-shirt/sections/Hero.astro';
+import ProductIntro from '../products/mens-black-oversized-t-shirt/sections/ProductIntro.astro';
+import Features from '../products/mens-black-oversized-t-shirt/sections/Features.astro';
+import Gallery from '../products/mens-black-oversized-t-shirt/sections/Gallery.astro';
+import Material from '../products/mens-black-oversized-t-shirt/sections/Material.astro';
+import Styling from '../products/mens-black-oversized-t-shirt/sections/Styling.astro';
+import Specifications from '../products/mens-black-oversized-t-shirt/sections/Specifications.astro';
+import Faq from '../products/mens-black-oversized-t-shirt/sections/Faq.astro';
+import Order from '../products/mens-black-oversized-t-shirt/sections/Order.astro';
+import { tshirtImages } from '../products/mens-black-oversized-t-shirt/media.js';
+import { content, faqItems } from '../products/mens-black-oversized-t-shirt/lib.js';
+import { getProduct } from '../products';
+import { store } from '../data/site';
+
+const entry = getProduct('mens-black-oversized-t-shirt');
+const { seo, product, commerce, packageContents, colors, ctas, footer } = content;
+
+const ogImage = await getImage({
+  src: tshirtImages.ogImage.src,
+  width: 1200,
+  height: 630,
+  fit: 'cover',
+  position: 'top',
+  format: 'jpg',
+  quality: 75,
+});
+const absolute = (path: string) => (Astro.site ? new URL(path, Astro.site).href : undefined);
+const pageUrl = absolute(Astro.url.pathname);
+const imageUrl = absolute(ogImage.src);
+
+// Price and availability are only published once verified (`commerce.price` / `checkoutUrl`).
+const offer =
+  typeof commerce.price === 'number' && commerce.checkoutUrl
+    ? { '@type': 'Offer', price: commerce.price, priceCurrency: commerce.currency, url: commerce.checkoutUrl }
+    : undefined;
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Product',
+      '@id': '#product',
+      name: product.name,
+      alternateName: product.nameEn,
+      description: seo.description,
+      category: product.categoryEn,
+      brand: { '@type': 'Brand', name: product.manufacturerBrand },
+      material: product.materialEn,
+      color: product.colorEn,
+      size: product.featuredSize,
+      ...(imageUrl && { image: [imageUrl] }),
+      ...(pageUrl && { url: pageUrl }),
+      audience: { '@type': 'PeopleAudience', suggestedGender: 'male' },
+      additionalProperty: [
+        { '@type': 'PropertyValue', name: 'Fit', value: product.fitEn },
+        { '@type': 'PropertyValue', name: 'Colour range (subject to stock)', value: colors.map((c: any) => c.nameEn).join(', ') },
+        { '@type': 'PropertyValue', name: 'Package contents', value: packageContents.join('، ') },
+      ],
+      ...(offer && { offers: offer }),
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: faqItems.map((item: any) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: { '@type': 'Answer', text: item.answer },
+      })),
+    },
+    {
+      '@type': 'WebPage',
+      name: seo.title,
+      description: seo.description,
+      inLanguage: 'ar-EG',
+      about: { '@id': '#product' },
+      publisher: { '@type': 'Organization', name: store.name, ...(store.url && { url: store.url }) },
+    },
+  ],
+};
+---
+
+<Layout
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  ogType="product"
+  ogImage={ogImage.src}
+  ogImageAlt={tshirtImages.ogImage.alt}
+  structuredData={structuredData}
+  product={entry}
+>
+  <GlobalHeader />
+  <div class="page-shell">
+    <main id="main">
+      <Hero />
+      <ProductIntro />
+      <Features />
+      <Gallery />
+      <Material />
+      <Styling />
+      <Specifications />
+      <Faq />
+      <Order />
+    </main>
+    <SiteFooter note={footer.note} />
+  </div>
+  <SectionDock product={entry} ctaLabel={ctas.header} />
+</Layout>

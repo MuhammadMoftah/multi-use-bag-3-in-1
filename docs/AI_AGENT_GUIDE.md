@@ -1,102 +1,105 @@
 # AI agent guide
 
-Read `docs/Eloura_Travel_Bag_AI_Agent_Master_Prompt.md` for the product brief, then this file.
-See `docs/PROJECT_MAP.md` for structure and `docs/ASSET_CATALOG.md` for images.
+See `docs/PROJECT_MAP.md` for structure and navigation, `docs/ASSET_CATALOG.md` for images.
 
 ## Golden rules
 
-- **Copy lives in `src/content/eloura-travel-bag.content.js`.** Edit text there, not in components.
-- **Images live in `src/content/eloura-travel-bag.media.js`.** Components ask for roles, never files.
-- Do not invent specs, weight, capacity in litres, prices, discounts, ratings, reviews, stock or urgency.
-- Material is **water-resistant**, never "waterproof". The garment section **reduces** wrinkles; never claim it eliminates them.
-  Never guarantee airline cabin acceptance.
-- Do not restyle: keep the palette, type scale, masks, spacing and animations. This is a content site on an existing design.
+- **Site-wide settings live in `src/data/site.ts`** (brand, store links, analytics IDs, global nav);
+  homepage copy in `src/data/home.ts`.
+- **Product copy lives in `src/products/{slug}/content.js`**, product images in `src/products/{slug}/media.js`.
+  Components ask for roles, never files. Edit text there, not in components.
+- **The registry (`src/products/index.ts`) is the only list of products.** The homepage gallery, footer and
+  mobile menu render from it. Never add placeholder or fake products.
+- Product pages are hand-built per product (`src/pages/{slug}.astro` + `src/products/{slug}/sections/`).
+  Share components (`GlobalHeader`, `SiteFooter`, `SectionDock`, `OrderLink`, `GalleryShowcase`, `ui/*`),
+  not layouts: each product may have its own sections, order and motion.
+- Do not invent prices, discounts, ratings, reviews, stock levels, sales numbers, company history or
+  achievements. Never imply every colour or size is in stock.
+- Copy is Egyptian Arabic (اطلب، اكتشف، نسّقه).
+
+### T-shirt facts (verified)
+
+Men's Basic Oversized T-Shirt, Summer Melton (سمر ميلتون), black, featured size 2XL, oversized fit,
+manufacturer brand Generic (Eloura is the store), 1 T-shirt per package. Colours: black, white, brown, navy,
+burgundy; colour and size availability depends on stock.
 
 ## Purchase flow
 
-All purchase CTAs render through `src/components/ui/OrderLink.astro` and link (same tab) to
-`commerce.checkoutUrl`, the live EasyOrders product page:
-`https://elouravtx.myeasyorders.com/products/shnth-alsfr-altrnd`. EasyOrders handles cart, checkout and
-payment; this site has no order form, API or payment code. To change the URL, edit `commerce.checkoutUrl`
-only. Never hard-code the URL in a component, and use `OrderLink` for any new buy button so it keeps
-`data-checkout` (analytics).
+Every purchase CTA renders through `src/components/ui/OrderLink.astro` with a registry entry
+(`<OrderLink product={entry}>`) and links (same tab) to `product.purchaseUrl`, the live EasyOrders product page.
+For the T-shirt: `https://elouravtx.myeasyorders.com/products/xl2tyshrt-aswd-smr-myltwn` (`commerce.checkoutUrl`
+in its `content.js`). EasyOrders handles cart, checkout and payment; this site has no order form or payment code.
+Never hard-code the URL in a component.
 
-CTAs: header + floating nav + mobile menu, hero, product details, How it works (under the video),
-specifications, order section, footer.
+Product cards (`ProductCard.astro`) always link to the internal landing page, never to EasyOrders.
+
+T-shirt CTAs: hero, features, specifications, order section, section dock.
 
 ## Configuration (`null` until verified)
 
 | Setting | Location | Effect when set |
 | --- | --- | --- |
-| `commerce.price` / `compareAtPrice` | content file | Price shown in specs bar and order section; `Offer` added to JSON-LD. `compareAtPrice` is not rendered: no discount display without a verified offer |
-| `analytics.metaPixelId` / `ga4MeasurementId` | content file | `Analytics.astro` injects the tag(s) |
-| `contactUrl`, `shippingPolicyUrl`, `returnsPolicyUrl`, `privacyPolicyUrl`, `termsUrl` | content file (`store`) | Footer policy links appear (`store.url` is set to the EasyOrders storefront and shown in the brand section) |
-| `site` | `astro.config.mjs` | Enables canonical URL, `og:url`, `og:image`/`twitter:image` and absolute JSON-LD image/url |
+| `commerce.price` / `compareAtPrice` | product `content.js` | Price in specs bar and order section; `Offer` added to JSON-LD |
+| `analytics.metaPixelId` / `ga4MeasurementId` | `src/data/site.ts` | `Analytics.astro` injects the tag(s) |
+| `contactUrl`, `shippingPolicyUrl`, `returnsPolicyUrl`, `privacyPolicyUrl`, `termsUrl` | `src/data/site.ts` (`store`) | Footer policy links appear |
+| `site` | `astro.config.mjs` | Canonical URL, `og:url`, `og:image`/`twitter:image`, absolute JSON-LD URLs |
 
-## Product video
+## Structured data
 
-`src/assets/imgs/video-1.mp4` (owner-supplied, H.264 + AAC, 720 × 1280, 23.9 s, ≈7.7 MB, "fast start")
-is imported with `?url` in `eloura-travel-bag.media.js` (`productVideo`) and shown in the How it works
-section by `src/components/video/ProductVideo.vue` (`client:visible`).
-
-- The poster (`src/assets/eloura/video-poster.jpg`, frame at 12.6 s) is a lazy `<Image>` *behind* the
-  video, not a `poster` attribute, which browsers fetch eagerly and which cost mobile LCP.
-- `preload="none"`: no video bytes load until the player is in view. It then plays muted + looped +
-  `playsinline` while at least 35 % visible and pauses when scrolled away.
-- `prefers-reduced-motion: reduce`: never autoplays; a play button starts it.
-- Controls: play/pause and mute/unmute (Arabic labels). Once the visitor pauses, it won't auto-resume.
-  Without JavaScript the native `controls` are shown instead.
-- Fixed 9:16 frame and `width`/`height` attributes, so no layout shift.
+- Homepage: `WebSite` + `CollectionPage` with an `ItemList` of registry products (name, URL).
+- T-shirt: `Product` (name, category, brand Generic, material, colour, size, male audience, fit, colour range,
+  package contents), `FAQPage` and `WebPage`. No price, availability, rating or review until verified.
 
 ## Analytics events
 
-Meta Pixel `4460772997566697` (Eloura | Website Pixel) is live (`analytics.metaPixelId`). `src/components/Analytics.astro` renders
-the official base code verbatim (`is:inline`, not bundled) in `<head>`, wrapped so it runs after the
-window `load` event (via `requestIdleCallback`, 3 s timeout); the `<noscript>` image is at the
-top of `<body>` (`<Analytics placement="body" />` in `Layout.astro`). The root `/` redirect page has no
-Pixel, so a visit to `/` records one PageView (on the product page). No client-side routing exists.
+Meta Pixel `4460772997566697` (Eloura | Website Pixel) is live on every page. `Analytics.astro` renders the
+official base code in `<head>`, deferred until after `load`; the `<noscript>` image is at the top of `<body>`.
+Click events come from `src/scripts/tracking.ts` for links marked `data-track` (with `data-product-id` /
+`data-product-name`), and are only sent to tags that are loaded.
 
 | Event | Meta | GA4 (inactive, ID null) | Trigger |
 | --- | --- | --- | --- |
 | Page view | `PageView` | config page_view | Tag load, once per page load |
-| Product view | not sent (phase 2) | `view_item` | Once per page load |
-| Checkout start | not sent (phase 2) | `begin_checkout` | First click on any `a[data-checkout]` |
+| Product page view | not sent | `view_item` (`item_id` = product id) | Product landing page load (`Layout` `product` prop) |
+| Product discovery click | custom `ProductDiscoveryClick` | `select_item` | `data-track="product-card"` (cards, hero chip, footer, menu) |
+| Purchase CTA click | custom `CheckoutLinkClick` | `begin_checkout` | `data-track="checkout"` (OrderLink); once per product per page view |
+| Official store click | custom `OfficialStoreClick` | `outbound_store_click` | `data-track="store"` |
 | Purchase | **never from this site** | — | Must come from EasyOrders after an order is actually created |
 
-Meta's *automatic events* (Events Manager → dataset settings) send `SubscribedButtonClick` when a CTA is
-clicked unless disabled there; this is Meta-side configuration, not site code (the owner disables it in
-Events Manager).
-
-Headless browsers (Lighthouse, CI) load the Pixel but Meta does not send `/tr` hits from them; test
-event delivery in a normal browser.
+Standard `ViewContent` / `InitiateCheckout` are deliberately not sent so they don't double-count with
+EasyOrders' own Pixel integration.
 
 ## RTL and Arabic conventions
 
 - `<html lang="ar" dir="rtl">`. Use logical utilities (`ps-/pe-`, `ms-/me-`, `start-/end-`, `text-start`, `border-s`), never `left/right`.
-- Directional shapes are mirrored: `shape-hero-mirror`, `shape-hero-mobile-mirror`; `shape-pebble` / `shape-pebble-right` were swapped per side.
-  Arrow icons flip via `[dir="rtl"] .btn-arrow`. The gallery's keys, swipe and transitions are reversed (ArrowLeft = next).
-- Wrap English runs inside Arabic text in `<span lang="en" dir="ltr">` (otherwise "3-in-1 …" reorders). Spec rows with `lang: 'en'` do this automatically.
-- Fonts (Astro Fonts API, `astro.config.mjs`): Cormorant Garamond + Manrope (Latin subset, no fallbacks), followed by
-  Markazi Text 500 (display) and IBM Plex Sans Arabic 400/500/600 (body) for Arabic glyphs; generic fallbacks sit on the Arabic families.
-  Markazi was chosen over Amiri because its Arabic file is 24 KB vs 106 KB (measured mobile LCP 3.5 s → 2.9 s).
-- Arabic gets `letter-spacing: normal` and taller line-heights (see the Arabic block at the end of `global.css`). No synthetic italics.
+- Arrow icons flip via `[dir="rtl"] .btn-arrow`. The gallery's keys, swipe and transitions are reversed (ArrowLeft = next).
+- Wrap English runs inside Arabic text in `<span lang="en" dir="ltr">`. Spec rows and figures with `lang: 'en'` do this automatically.
+- Arabic buttons, eyebrows and labels are not uppercased (embedded "Eloura" keeps its casing); `lang="en"` runs are.
+- Fonts (Astro Fonts API, `astro.config.mjs`): Manrope 400–800 (Latin) + IBM Plex Sans Arabic 400/500/700;
+  Cormorant Garamond italic for the wordmark only.
 
-## Adding a section
+## Adding a product
 
-1. Add content under a new key in the content file.
-2. Create `src/components/sections/<Name>.astro`, reusing `SectionHeading`, `data-reveal`, existing mask utilities and `OrderLink` for CTAs.
-3. Render it in `src/pages/3-in-1-travel-garment-duffel-bag.astro`; add a `nav` entry if it needs an anchor.
+1. Put its originals in `src/assets/imgs/{slug}/`; add crops for it to `scripts/prepare-product-images.mjs`
+   and run `node scripts/prepare-product-images.mjs {slug}`.
+2. Create `src/products/{slug}/` with `content.js` (copy, facts, `commerce.checkoutUrl`, `seo`, `sections`,
+   `showcase`), `media.js` (imports from `derived/`) and `product.ts` (registry entry typed as `Product`).
+3. Import the entry in `src/products/index.ts`. It now appears on the homepage, footer and mobile menu.
+4. Build its sections in `src/products/{slug}/sections/` and its page at `src/pages/{slug}.astro`:
+   `Layout` (with `product={entry}`, `ogType="product"`), `GlobalHeader`, `.page-shell` > `<main id="main">` +
+   `SiteFooter`, and `SectionDock product={entry}`. Every section listed in `sections` needs a matching `id`,
+   and the hero should be `id="top"` (or pass `heroId` to the dock).
+
+## Adding a section to a product page
+
+1. Add content under a new key in the product's `content.js`.
+2. Create the component in `src/products/{slug}/sections/`, reusing `SectionHeading`, `.frame`, `data-reveal` and `OrderLink`.
+3. Render it in the page; add a `sections` entry if it should appear in the dock.
 
 ## Verification checklist
 
-- `npm run build` passes; no references to Solana/ORA remain (`rg -i "solana|ora " src`).
-- Check 390 px and 1440 px widths: no horizontal scroll, no broken images, no console errors.
-- Lighthouse mobile and desktop (report measured numbers only). Last measured, production build with the video:
-  mobile 94 / 100 / 100 / 100 (LCP 2.9 s, CLS 0), desktop 100 / 100 / 100 / 100 (LCP 0.6 s).
-- Every `a[data-checkout]` href equals `commerce.checkoutUrl`; no `href="#order"` purchase links remain.
-- Video: no `.mp4` request before scrolling to it; plays in view, pauses out of view, honours reduced motion.
-  Test playback in a normal (non-headless) browser: headless Edge pauses muted video on its own.
+- `npm run check` and `npm run build` pass (from a path without `#`).
+- Both routes render: `/` and `/mens-black-oversized-t-shirt`.
+- Check 390 px, 820 px and 1440 px widths: no horizontal scroll, no broken images, no console errors.
+- Every `a[data-track="checkout"]` href equals the product's `purchaseUrl`; product cards link to internal routes.
 - Meta Pixel: exactly one `fbevents.js`, one `fbq('init')`, one PageView; no Purchase on CTA click.
-- Lighthouse with the deferred Pixel (production build, local): mobile 92 / 100 / 79 / 100 (LCP 2.9 s,
-  TBT 150–170 ms), desktop 100 / 100 / 78 / 100. Best Practices is capped by Meta's third-party cookie
-  and the issues it logs. Loading the base code eagerly measured mobile Performance 75–87.

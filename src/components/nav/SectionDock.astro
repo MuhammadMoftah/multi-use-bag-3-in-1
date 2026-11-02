@@ -1,0 +1,123 @@
+---
+/**
+ * Contextual section navigation for a product landing page: a compact
+ * floating dock at the bottom of the viewport with the product's own sections
+ * (from `product.sections`, or `sections` to override) and its purchase CTA.
+ *
+ * It appears once the hero has scrolled away, steps aside over the footer,
+ * highlights the section in view and shows itself when it receives keyboard
+ * focus. Section links are plain anchors: smooth scrolling and the sticky
+ * header offset come from `scroll-behavior` / `scroll-padding-top` in global.css,
+ * so reduced-motion preferences are respected.
+ */
+import OrderLink from '../ui/OrderLink.astro';
+import type { Product, ProductSection } from '../../products';
+
+interface Props {
+  product: Product;
+  sections?: ProductSection[];
+  ctaLabel: string;
+  /** Element id of the hero; the dock stays hidden while it is in view. */
+  heroId?: string;
+}
+
+const { product, sections = product.sections, ctaLabel, heroId = 'top' } = Astro.props;
+---
+
+<nav
+  id="section-dock"
+  class="section-dock pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-5"
+  aria-label={`أقسام صفحة ${product.name}`}
+  data-hero={heroId}
+>
+  <div
+    class="dock-bar flex w-full max-w-max min-w-0 items-center gap-1.5 rounded-full border border-bone-300/20 bg-ink-900/85 p-1.5 shadow-[0_1.5rem_3rem_-1rem_rgb(0_0_0/0.7)] backdrop-blur-xl"
+  >
+    <ul class="dock-links flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto">
+      {
+        sections.map((section) => (
+          <li class="shrink-0">
+            <a href={`#${section.id}`} class="nav-pill min-h-10 px-3.5 sm:px-4">
+              {section.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <OrderLink product={product} class="btn btn-solid min-h-10 shrink-0 px-4 sm:px-6" arrow={false}>{ctaLabel}</OrderLink>
+  </div>
+</nav>
+
+<style>
+  .section-dock {
+    opacity: 0;
+    transform: translateY(1.5rem);
+    transition:
+      opacity 0.6s var(--ease-out-soft),
+      transform 0.7s var(--ease-out-soft);
+  }
+
+  .section-dock[data-visible],
+  .section-dock:focus-within,
+  :global(html:not(.js)) .section-dock {
+    opacity: 1;
+    transform: none;
+  }
+
+  .section-dock[data-visible] .dock-bar,
+  .section-dock:focus-within .dock-bar,
+  :global(html:not(.js)) .section-dock .dock-bar {
+    pointer-events: auto;
+  }
+
+  .dock-links {
+    scrollbar-width: none;
+    mask-image: linear-gradient(to left, transparent, #000 1rem, #000 calc(100% - 1rem), transparent);
+  }
+
+  .dock-links::-webkit-scrollbar {
+    display: none;
+  }
+</style>
+
+<script>
+  import { initScrollSpy } from '../../scripts/scroll-spy';
+
+  const dock = document.getElementById('section-dock');
+  if (dock) {
+    const list = dock.querySelector<HTMLElement>('.dock-links')!;
+    const hero = document.getElementById(dock.dataset.hero ?? '');
+    const footer = document.querySelector('footer');
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    let pastHero = !hero;
+    let overFooter = false;
+    const sync = () => dock.toggleAttribute('data-visible', pastHero && !overFooter);
+
+    if ('IntersectionObserver' in window) {
+      if (hero) {
+        new IntersectionObserver(([entry]) => {
+          pastHero = !entry.isIntersecting;
+          sync();
+        }, { rootMargin: '0px 0px -40% 0px' }).observe(hero);
+      }
+      if (footer) {
+        new IntersectionObserver(([entry]) => {
+          overFooter = entry.isIntersecting;
+          sync();
+        }).observe(footer);
+      }
+    } else {
+      pastHero = true;
+    }
+    sync();
+
+    // Keep the active link in view inside the horizontally scrolling strip.
+    initScrollSpy([...list.querySelectorAll<HTMLAnchorElement>('a')], (active) => {
+      if (!active || list.scrollWidth <= list.clientWidth) return;
+      const strip = list.getBoundingClientRect();
+      const link = active.getBoundingClientRect();
+      const offset = link.left + link.width / 2 - (strip.left + strip.width / 2);
+      list.scrollBy({ left: offset, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+    });
+  }
+</script>

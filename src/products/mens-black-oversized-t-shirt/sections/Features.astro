@@ -1,0 +1,56 @@
+---
+import { Image } from 'astro:assets';
+import OrderLink from '../../../components/ui/OrderLink.astro';
+import entry from '../product';
+import { tshirtImages } from '../media.js';
+import { content, pad2 } from '../lib.js';
+
+const { features, ctas } = content;
+const image = tshirtImages.featuresMain;
+---
+
+<section id="features" class="section section-tint overflow-hidden" aria-labelledby="features-title">
+  <div class="container-x grid items-center gap-y-14 lg:grid-cols-12 lg:gap-x-16">
+    <div class="lg:col-span-7">
+      <p class="eyebrow" data-reveal>{features.eyebrow}</p>
+      <h2 id="features-title" class="heading-2 mt-6" data-reveal style="--reveal-delay:80">
+        {features.heading}
+      </h2>
+      <p class="lead mt-6" data-reveal style="--reveal-delay:140">{features.description}</p>
+
+      <ol class="hairline mt-10 border-t">
+        {
+          features.items.map((feature: any, index: number) => (
+            <li class="hairline grid grid-cols-[3rem_1fr] items-baseline gap-x-4 border-b py-5 sm:grid-cols-[4.5rem_1fr]" data-reveal style={`--reveal-delay:${index * 70}`}>
+              <span class="font-display text-[clamp(1.5rem,1.2rem+1vw,2.25rem)] leading-none font-extrabold text-bone-700 tabular-nums" lang="en" aria-hidden="true">
+                {pad2(index)}
+              </span>
+              <span>
+                <h3 class="text-[clamp(1.0625rem,1rem+0.35vw,1.3125rem)] leading-snug font-bold text-bone-100">{feature.title}</h3>
+                <p class="meta mt-1.5 text-[0.9rem]">{feature.description}</p>
+              </span>
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="mt-10" data-reveal>
+        <OrderLink product={entry} class="btn btn-solid">{ctas.primary}</OrderLink>
+      </div>
+    </div>
+
+    <figure class="mx-auto w-full max-w-[26rem] lg:col-span-5 lg:max-w-none" data-reveal="image">
+      <div class="frame hover-zoom aspect-[2/3] lg:aspect-[386/800] lg:max-h-[46rem]">
+        <Image
+          src={image.src}
+          alt={image.alt}
+          widths={[386]}
+          sizes="(min-width: 64rem) 24rem, 26rem"
+          quality={68}
+          class="media-fill object-[50%_8%]"
+        />
+      </div>
+      <figcaption class="meta mt-4 text-center">{image.caption}</figcaption>
+    </figure>
+  </div>
+</section>

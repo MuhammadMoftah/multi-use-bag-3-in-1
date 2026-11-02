@@ -1,0 +1,283 @@
+---
+/**
+ * Homepage hero: the Eloura brand first, products second. Typography carries
+ * the composition; imagery comes from the registry, one lead image per product
+ * (up to three), so a single product is shown once and never duplicated. A
+ * category marquee closes the hero and says what Eloura offers.
+ *
+ * Entrance motion is CSS-only (no JS needed); under reduced motion every
+ * element simply appears in its final state.
+ */
+import { Image, Picture } from 'astro:assets';
+import Icon from '../ui/Icon.astro';
+import { brandCategories, home } from '../../data/home';
+import { store } from '../../data/site';
+import { products, leadImage, type ProductImage } from '../../products';
+import { pad2 } from '../../lib/format';
+
+const { hero } = home;
+const items = products.slice(0, 3).map((product) => ({ product, image: leadImage(product) }));
+const [main, second, third] = items;
+const total = String(products.length).padStart(2, '0');
+const letters = [...hero.brand];
+const position = (image?: ProductImage) => (image?.position ? `object-position:${image.position}` : undefined);
+---
+
+<section id="top" class="relative isolate flex flex-col overflow-hidden lg:min-h-[min(100svh,66rem)]" aria-label={`${hero.titleLead.join(' ')} ${hero.brand}`}>
+  <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+    <div class="absolute -top-48 end-[-12%] size-[48rem] rounded-full bg-[radial-gradient(closest-side,rgb(242_240_235/0.075),transparent)]"></div>
+    <div class="absolute start-[-18%] bottom-[-30%] size-[40rem] rounded-full bg-[radial-gradient(closest-side,rgb(184_178_166/0.05),transparent)]"></div>
+  </div>
+
+  <div class="container-x relative grid flex-1 gap-y-16 pt-28 pb-16 sm:pt-32 lg:grid-cols-12 lg:items-center lg:gap-x-12 lg:pt-28 lg:pb-12">
+    <div class="lg:col-span-7">
+      <p class="eyebrow animate-rise" lang="en">{hero.eyebrow}</p>
+
+      <h1 id="home-title" class="mt-8 font-display font-bold text-bone-100">
+        <span class="hero-mask block text-[clamp(2.25rem,1.5rem+2.9vw,4.25rem)] leading-[1.25]">
+          {
+            hero.titleLead.map((word, index) => (
+              <>
+                <span class="hero-word" style={`--i:${index}`}>{word}</span>{' '}
+              </>
+            ))
+          }
+        </span>
+        <span class="hero-brand inline-block" lang="en" dir="ltr">
+          <span class="sr-only">{hero.brand}</span>
+          <span aria-hidden="true">
+            {letters.map((letter, index) => <span class="hero-letter" style={`--i:${index}`}>{letter}</span>)}
+          </span>
+        </span>
+      </h1>
+
+      <p class="hero-supporting mt-5 animate-rise font-display text-[clamp(1.375rem,1.1rem+1.1vw,2.125rem)] leading-snug font-medium text-bone-300">
+        {hero.supporting}
+      </p>
+      <p class="lead mt-6 max-w-[34rem] animate-rise [animation-delay:820ms]">{hero.description}</p>
+
+      <div class="mt-10 flex flex-wrap items-center gap-4 animate-rise [animation-delay:940ms]">
+        <a href="#products" class="btn btn-solid min-h-13 px-9">
+          {hero.primaryCta}
+          <Icon name="arrow" class="btn-arrow" />
+        </a>
+        <a href={store.url} class="btn min-h-13 px-8" data-track="store">
+          <Icon name="bag" class="size-4" />
+          {hero.secondaryCta}
+        </a>
+      </div>
+
+      <ol class="hairline mt-10 flex max-w-[36rem] flex-wrap items-center gap-x-4 gap-y-2 border-t pt-6 animate-rise [animation-delay:1060ms]" aria-label={hero.stepsLabel}>
+        {
+          hero.steps.map((step, index) => (
+            <li class="flex items-center gap-4">
+              {index > 0 && <span class="h-px w-6 bg-bone-700" aria-hidden="true" />}
+              <span class="flex items-baseline gap-2">
+                <span class="font-display text-[0.75rem] font-bold tracking-[0.2em] text-bone-700" lang="en" aria-hidden="true">{pad2(index)}</span>
+                <span class="text-[0.9375rem] font-semibold text-bone-100">{step}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+
+    {
+      main && (
+        <div class="hero-visual relative mx-auto w-full max-w-[24rem] sm:max-w-[28rem] lg:col-span-5 lg:max-w-[30rem]">
+          <div class="relative" data-parallax style="--parallax-y:-3.5rem">
+            <div class="shape-arch hover-zoom aspect-[3/4]">
+              <Picture
+                src={main.image.src}
+                alt={main.image.alt}
+                formats={['avif', 'webp']}
+                widths={[400, 640, 900, 1200]}
+                sizes="(min-width: 64rem) 30rem, (min-width: 40rem) 28rem, 90vw"
+                quality={58}
+                priority
+                class="media-fill animate-unveil"
+                style={position(main.image)}
+                pictureAttributes={{ class: 'contents' }}
+              />
+              <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink-950/80 to-transparent" aria-hidden="true" />
+              <span class="pointer-events-none absolute inset-3 rounded-[999px_999px_1rem_1rem] border border-bone-100/15" aria-hidden="true" />
+              <span class="arch-shutter absolute inset-0 bg-ink-900" aria-hidden="true" />
+            </div>
+          </div>
+
+          {third && (
+            <div class="absolute start-[-14%] top-[16%] w-[34%]" data-parallax style="--parallax-y:2.5rem">
+              <div class="shape-circle relative border-[6px] border-ink-900 animate-curtain [animation-delay:900ms]">
+                <Image src={third.image.src} alt={third.image.alt} widths={[240, 360, 480]} sizes="11rem" quality={60} class="media-fill" style={position(third.image)} />
+              </div>
+            </div>
+          )}
+
+          {second && (
+            <div class="absolute end-[-12%] bottom-[-8%] w-[44%]" data-parallax style="--parallax-y:-6rem">
+              <div class="frame aspect-[4/5] border-[6px] border-ink-900 animate-curtain [animation-delay:700ms]">
+                <Image src={second.image.src} alt={second.image.alt} widths={[320, 480, 640]} sizes="14rem" quality={62} class="media-fill" style={position(second.image)} />
+              </div>
+            </div>
+          )}
+
+          <div class="badge absolute end-[-0.5rem] top-[6%] size-28 animate-rise [animation-delay:1100ms] sm:end-[-2.5rem] sm:size-32" data-parallax style="--parallax-y:2rem" aria-hidden="true" dir="ltr">
+            <div class="relative size-full rounded-full border border-bone-100/15 bg-ink-900/85 backdrop-blur-md">
+              <svg class="badge-ring absolute inset-0 size-full" viewBox="0 0 120 120">
+                <defs>
+                  <path id="hero-badge-path" d="M60 60m-46 0a46 46 0 1 1 92 0a46 46 0 1 1-92 0" />
+                </defs>
+                <text class="fill-bone-500 text-[8.5px] font-semibold tracking-[0.2em] uppercase" lang="en">
+                  <textPath href="#hero-badge-path" textLength="286" lengthAdjust="spacing">{hero.badge}</textPath>
+                </text>
+              </svg>
+              <span class="absolute inset-0 grid place-items-center font-brand text-[2.25rem] text-bone-100 italic" lang="en">E</span>
+            </div>
+          </div>
+
+          <a
+            href={main.product.route}
+            class="group absolute start-[-0.75rem] bottom-[9%] z-10 flex max-w-[82%] items-center gap-3 rounded-full border border-bone-300/25 bg-ink-900/80 py-2 ps-5 pe-2 backdrop-blur-xl transition-colors duration-500 hover:border-bone-100 animate-rise [animation-delay:1250ms] sm:start-[-2rem]"
+            data-track="product-card"
+            data-product-id={main.product.id}
+            data-product-name={main.product.nameEn}
+          >
+            <span class="min-w-0">
+              <span class="flex items-baseline gap-2 text-[0.75rem] text-bone-500">
+                {hero.collectionLabel}
+                <span class="font-display font-bold tracking-[0.18em]" lang="en" dir="ltr">
+                  01 / {total}
+                </span>
+              </span>
+              <span class="block truncate text-[0.9375rem] font-bold text-bone-100">{main.product.name}</span>
+            </span>
+            <span class="btn-round size-10 shrink-0 group-hover:border-bone-100 group-hover:bg-bone-100 group-hover:text-ink-900">
+              <Icon name="arrow" class="btn-arrow" />
+            </span>
+          </a>
+        </div>
+      )
+    }
+  </div>
+
+  <div class="marquee hairline relative border-y bg-ink-950/30 py-5 sm:py-6" aria-hidden="true">
+    <div class="marquee-track flex w-max" dir="ltr">
+      {
+        [0, 1].map(() => (
+          <ul class="flex shrink-0 items-center">
+            {[...brandCategories, ...brandCategories].map((category) => (
+              <li class="flex items-center gap-6 pe-6 sm:gap-8 sm:pe-8">
+                <span class="marquee-outline font-display text-[clamp(1.75rem,1.2rem+2vw,3rem)] leading-none font-extrabold tracking-[-0.01em] uppercase" lang="en">
+                  {category.nameEn}
+                </span>
+                <span class="font-display text-[clamp(1.125rem,0.95rem+0.7vw,1.5rem)] leading-none font-bold text-bone-300" lang="ar" dir="rtl">
+                  {category.name}
+                </span>
+                <span class="font-brand text-[1.5rem] leading-none text-bone-700 italic">✦</span>
+              </li>
+            ))}
+          </ul>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero-brand {
+    margin-top: 0.02em;
+    color: var(--color-bone-50);
+    font-family: var(--font-brand);
+    font-size: clamp(5.75rem, 2.5rem + 12vw, 13.5rem);
+    font-style: italic;
+    font-weight: 500;
+    line-height: 0.88;
+    letter-spacing: -0.02em;
+  }
+
+  /* Room for Arabic ascenders/dots inside the reveal mask. */
+  .hero-mask {
+    overflow: hidden;
+    padding-block: 0.12em;
+    margin-block: -0.12em;
+  }
+
+  .hero-word,
+  .hero-letter {
+    display: inline-block;
+  }
+
+  .hero-supporting {
+    animation-delay: 700ms;
+  }
+
+  .marquee-outline {
+    color: transparent;
+    -webkit-text-stroke: 1px rgb(242 240 235 / 0.45);
+  }
+
+  .arch-shutter {
+    transform-origin: top;
+    transform: scaleY(0);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-word {
+      animation: hero-word-in 1.3s var(--ease-out-soft) both;
+      animation-delay: calc(120ms + var(--i) * 110ms);
+    }
+
+    .hero-letter {
+      animation: hero-letter-in 1.5s var(--ease-out-soft) both;
+      animation-delay: calc(320ms + var(--i) * 70ms);
+    }
+
+    .arch-shutter {
+      animation: shutter-open 1.5s var(--ease-in-out-soft) 150ms both;
+    }
+
+    .badge-ring {
+      animation: badge-spin 28s linear infinite;
+    }
+
+    .marquee-track {
+      animation: marquee 60s linear infinite;
+    }
+
+    .marquee:hover .marquee-track {
+      animation-play-state: paused;
+    }
+  }
+
+  @keyframes hero-word-in {
+    from {
+      transform: translateY(110%);
+    }
+  }
+
+  @keyframes hero-letter-in {
+    from {
+      opacity: 0;
+      filter: blur(10px);
+      transform: translateY(0.18em) rotate(4deg);
+    }
+  }
+
+  @keyframes shutter-open {
+    from {
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes badge-spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+</style>

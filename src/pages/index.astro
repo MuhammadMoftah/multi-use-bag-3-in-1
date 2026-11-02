@@ -1,0 +1,81 @@
+---
+import { getImage } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import GlobalHeader from '../components/layout/GlobalHeader.astro';
+import SiteFooter from '../components/layout/SiteFooter.astro';
+import HomeHero from '../components/home/HomeHero.astro';
+import AboutEloura from '../components/home/AboutEloura.astro';
+import DiscoverProducts from '../components/home/DiscoverProducts.astro';
+import ShoppingJourney from '../components/home/ShoppingJourney.astro';
+import FeaturedSpotlight from '../components/home/FeaturedSpotlight.astro';
+import FinalCta from '../components/home/FinalCta.astro';
+import { home } from '../data/home';
+import { site, store } from '../data/site';
+import { products, featuredProduct, leadImage } from '../products';
+
+const { seo } = home;
+const ogSource = leadImage(featuredProduct ?? products[0]);
+const ogImage = await getImage({
+  src: ogSource.src,
+  width: 1200,
+  height: 630,
+  fit: 'cover',
+  position: 'top',
+  format: 'jpg',
+  quality: 75,
+});
+const absolute = (path: string) => (Astro.site ? new URL(path, Astro.site).href : undefined);
+const pageUrl = absolute('/');
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': '#website',
+      name: site.name,
+      inLanguage: site.language,
+      ...(pageUrl && { url: pageUrl }),
+      publisher: { '@type': 'Organization', name: store.name, url: store.url },
+    },
+    {
+      '@type': 'CollectionPage',
+      name: seo.title,
+      description: seo.description,
+      inLanguage: site.language,
+      isPartOf: { '@id': '#website' },
+      mainEntity: {
+        '@type': 'ItemList',
+        itemListElement: products.map((product, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: product.name,
+          ...(absolute(product.route) && { url: absolute(product.route) }),
+        })),
+      },
+    },
+  ],
+};
+---
+
+<Layout
+  title={seo.title}
+  description={seo.description}
+  keywords={[...seo.keywords]}
+  ogImage={ogImage.src}
+  ogImageAlt={seo.ogImageAlt}
+  structuredData={structuredData}
+>
+  <GlobalHeader />
+  <div class="page-shell">
+    <main id="main">
+      <HomeHero />
+      <AboutEloura />
+      <DiscoverProducts />
+      <ShoppingJourney />
+      <FeaturedSpotlight />
+      <FinalCta />
+    </main>
+    <SiteFooter />
+  </div>
+</Layout>

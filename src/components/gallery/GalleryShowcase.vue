@@ -6,6 +6,7 @@ interface Item {
   alt: string;
   caption: string;
   position?: string;
+  fit: 'cover' | 'contain';
   featuredSrc: string;
   featuredSrcset: string;
   thumbSrc: string;
@@ -17,8 +18,8 @@ interface Item {
 
 const props = defineProps<{ items: Item[]; label: string }>();
 
-const PAGE_SIZE = 6;
-const FEATURED_SIZES = '(min-width: 64rem) 52rem, 100vw';
+const PAGE_SIZE = 8;
+const FEATURED_SIZES = '(min-width: 64rem) 38rem, 100vw';
 const index = ref(0);
 const direction = ref<1 | -1>(1);
 const total = props.items.length;
@@ -73,7 +74,7 @@ watch(index, (i) => {
 
 <template>
   <div
-    class="gallery grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,21rem)] lg:items-start lg:gap-7"
+    class="gallery grid gap-6 lg:grid-cols-[minmax(0,38rem)_auto_minmax(0,1fr)] lg:items-start lg:gap-8"
     role="region"
     aria-roledescription="carousel"
     :aria-label="label"
@@ -81,7 +82,7 @@ watch(index, (i) => {
   >
     <figure class="min-w-0">
       <div
-        class="relative aspect-[4/3] touch-pan-y overflow-hidden rounded-[1.75rem] border border-champagne-300/15 bg-night-800 sm:aspect-[16/10]"
+        class="relative aspect-square touch-pan-y overflow-hidden rounded-[1.5rem] border border-white/10 bg-ink-800"
         @pointerdown="onPointerDown"
         @pointerup="onPointerUp"
       >
@@ -94,18 +95,19 @@ watch(index, (i) => {
             :alt="current.alt"
             :width="current.width"
             :height="current.height"
-            :style="current.position ? { objectPosition: current.position } : undefined"
+            :style="current.position && current.fit === 'cover' ? { objectPosition: current.position } : undefined"
             loading="lazy"
             decoding="async"
-            class="absolute inset-0 size-full object-cover"
+            class="absolute inset-0 size-full"
+            :class="current.fit === 'contain' ? 'object-contain' : 'object-cover'"
           />
         </Transition>
       </div>
       <figcaption class="mt-5 flex items-baseline gap-6" aria-live="polite">
-        <span class="font-display text-2xl text-champagne-300 tabular-nums" dir="ltr">
-          {{ pad(index + 1) }}<span class="text-mist-400"> / {{ pad(total) }}</span>
+        <span class="font-display text-2xl font-extrabold text-bone-100 tabular-nums" dir="ltr">
+          {{ pad(index + 1) }}<span class="font-medium text-mist-400"> / {{ pad(total) }}</span>
         </span>
-        <span class="text-[0.875rem] font-semibold text-champagne-100">{{ current.caption }}</span>
+        <span class="text-[0.9375rem] font-semibold text-bone-100">{{ current.caption }}</span>
       </figcaption>
     </figure>
 
@@ -120,34 +122,34 @@ watch(index, (i) => {
           <path d="M15 6l-6 6 6 6" />
         </svg>
       </button>
-      <span class="ms-auto text-[0.8125rem] text-mist-400 lg:hidden">اسحبي أو استخدمي الأسهم</span>
+      <span class="ms-auto text-[0.8125rem] text-mist-400 lg:hidden">اسحب أو استخدم الأسهم</span>
     </div>
 
-    <div class="min-w-0">
-      <ul class="thumbs -mx-1 flex snap-x gap-3 overflow-x-auto px-1 pb-2 lg:mx-0 lg:grid lg:grid-cols-2 lg:gap-3 lg:overflow-visible lg:px-0 lg:pb-0">
+    <div class="min-w-0 lg:self-center">
+      <ul class="thumbs -mx-1 flex snap-x gap-3 overflow-x-auto px-1 pb-2 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-3 lg:overflow-visible lg:px-0 lg:pb-0 xl:grid-cols-4">
         <li
           v-for="(item, i) in items"
           :key="item.id"
-          class="w-[38%] shrink-0 snap-start sm:w-[24%] lg:w-auto"
+          class="w-[30%] shrink-0 snap-start sm:w-[18%] lg:w-auto"
           :class="Math.floor(i / PAGE_SIZE) === page ? '' : 'lg:hidden'"
         >
           <a
             :href="item.fullSrc"
-            class="thumb group relative block aspect-[4/3] overflow-hidden rounded-2xl border transition-[border-color,opacity] duration-500"
-            :class="i === index ? 'border-champagne-300 opacity-100' : 'border-champagne-300/10 opacity-60 hover:opacity-100'"
+            class="thumb group relative block aspect-square overflow-hidden rounded-2xl border bg-ink-800 transition-[border-color,opacity] duration-500"
+            :class="i === index ? 'border-bone-100 opacity-100' : 'border-white/10 opacity-60 hover:opacity-100'"
             :aria-current="i === index ? 'true' : undefined"
-            :aria-label="`اعرضي الصورة ${i + 1}: ${item.caption}`"
+            :aria-label="`اعرض الصورة ${i + 1}: ${item.caption}`"
             @click.prevent="go(i)"
           >
             <img
               :src="item.thumbSrc"
               :srcset="item.thumbSrcset"
-              sizes="(min-width: 64rem) 10rem, (min-width: 40rem) 24vw, 38vw"
+              sizes="(min-width: 64rem) 8rem, (min-width: 40rem) 18vw, 30vw"
               alt=""
               loading="lazy"
               decoding="async"
-              width="480"
-              height="360"
+              width="320"
+              height="320"
               class="size-full object-cover transition-transform duration-1000 group-hover:scale-105"
               :style="item.position ? { objectPosition: item.position } : undefined"
             />
@@ -174,12 +176,12 @@ watch(index, (i) => {
 /* Right-to-left: the next image enters from the left. */
 .slide-next-enter-from {
   opacity: 0;
-  transform: translateX(-4%) scale(1.04);
+  transform: translateX(-4%) scale(1.03);
 }
 
 .slide-prev-enter-from {
   opacity: 0;
-  transform: translateX(4%) scale(1.04);
+  transform: translateX(4%) scale(1.03);
 }
 
 .slide-next-leave-to {
@@ -194,6 +196,6 @@ watch(index, (i) => {
 
 .thumbs {
   scrollbar-width: thin;
-  scrollbar-color: rgb(217 207 179 / 0.25) transparent;
+  scrollbar-color: rgb(255 255 255 / 0.2) transparent;
 }
 </style>

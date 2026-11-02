@@ -1,0 +1,85 @@
+---
+/**
+ * How shopping with Eloura works: discover here, explore each product's own
+ * page, order on the official store. The connecting line draws itself as the
+ * section scrolls in (scroll timelines); elsewhere it is simply drawn.
+ */
+import Icon from '../ui/Icon.astro';
+import { home } from '../../data/home';
+import { store, storeLinkLabel } from '../../data/site';
+import { pad2 } from '../../lib/format';
+
+const { journey } = home;
+---
+
+<section id="how" class="section overflow-hidden" aria-labelledby="how-title">
+  <div class="container-x">
+    <div class="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+      <div>
+        <p class="eyebrow" data-reveal>{journey.eyebrow}</p>
+        <h2 id="how-title" class="heading-2 mt-6" data-reveal style="--reveal-delay:80">
+          {journey.title}
+          <span class="heading-accent mt-3 block">{journey.accent}</span>
+        </h2>
+      </div>
+      <div data-reveal style="--reveal-delay:160">
+        <a href={store.url} class="btn min-h-12 px-7" data-track="store">
+          <Icon name="bag" class="size-4" />
+          {storeLinkLabel}
+        </a>
+      </div>
+    </div>
+
+    <ol class="journey relative mt-16 grid gap-12 md:mt-20 md:grid-cols-3 md:gap-10">
+      <span class="journey-track absolute inset-x-0 hidden h-px bg-white/10 md:block" aria-hidden="true">
+        <span class="journey-progress block h-full w-full bg-bone-300/70"></span>
+      </span>
+      {
+        journey.steps.map((step, index) => (
+          <li class="relative" data-reveal style={`--reveal-delay:${index * 120}`}>
+            <span class="journey-numeral block font-display text-[clamp(4rem,3rem+3vw,6rem)] leading-none font-extrabold" lang="en" aria-hidden="true">
+              {pad2(index)}
+            </span>
+            <span class="relative mt-6 hidden h-3 items-center md:flex" aria-hidden="true">
+              <span class="size-2.5 rounded-full bg-bone-100 shadow-[0_0_0_6px_var(--color-ink-900)]" />
+            </span>
+            <p class="label mt-6 text-bone-500 md:mt-8" lang="en">{step.labelEn}</p>
+            <h3 class="heading-3 mt-3">{step.title}</h3>
+            <p class="meta mt-3 max-w-[22rem] text-[0.9375rem]">{step.description}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .journey-numeral {
+    color: transparent;
+    -webkit-text-stroke: 1px rgb(242 240 235 / 0.35);
+  }
+
+  .journey-track {
+    top: calc(clamp(4rem, 3rem + 3vw, 6rem) + 1.5rem + 0.375rem);
+  }
+
+  .journey-progress {
+    transform-origin: right;
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .journey-progress {
+        animation: journey-draw linear both;
+        animation-timeline: view();
+        animation-range: entry 60% cover 60%;
+      }
+    }
+  }
+
+  @keyframes journey-draw {
+    from {
+      transform: scaleX(0);
+    }
+  }
+</style>

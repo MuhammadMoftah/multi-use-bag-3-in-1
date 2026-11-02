@@ -1,0 +1,65 @@
+---
+/**
+ * Closing brand moment. The oversized wordmark fills in as it scrolls into
+ * view (scroll timelines); elsewhere it is shown filled.
+ */
+import Icon from '../ui/Icon.astro';
+import { home } from '../../data/home';
+import { site, store } from '../../data/site';
+
+const { finalCta } = home;
+---
+
+<section class="section overflow-hidden" aria-labelledby="final-cta-title">
+  <div class="pointer-events-none absolute inset-x-0 top-1/3 -z-0 mx-auto h-[30rem] max-w-5xl rounded-full bg-[radial-gradient(closest-side,rgb(242_240_235/0.06),transparent)]" aria-hidden="true"></div>
+  <div class="container-x relative text-center">
+    <p class="closing-word font-brand leading-[0.9] italic" aria-hidden="true" lang="en" dir="ltr" data-reveal="fade">{site.brand}</p>
+
+    <div class="relative mx-auto mt-4 max-w-2xl">
+      <p class="eyebrow justify-center" data-reveal>{finalCta.eyebrow}</p>
+      <h2 id="final-cta-title" class="heading-2 mt-6" data-reveal style="--reveal-delay:80">
+        {finalCta.title}
+        <span class="heading-accent mx-auto mt-4 block max-w-xl">{finalCta.accent}</span>
+      </h2>
+      <div class="mt-10 flex flex-wrap items-center justify-center gap-4" data-reveal style="--reveal-delay:160">
+        <a href="#products" class="btn btn-solid min-h-13 px-9">
+          {finalCta.cta}
+          <Icon name="arrow" class="btn-arrow" />
+        </a>
+        <a href={store.url} class="btn min-h-13 px-8" data-track="store">
+          <Icon name="bag" class="size-4" />
+          {finalCta.storeCta}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .closing-word {
+    font-size: clamp(6.5rem, 2rem + 20vw, 22rem);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    color: transparent;
+    -webkit-text-stroke: 1px rgb(242 240 235 / 0.22);
+    background: linear-gradient(to top, rgb(242 240 235 / 0.92), rgb(184 178 166 / 0.55)) no-repeat bottom / 100% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .closing-word {
+        animation: closing-fill linear both;
+        animation-timeline: view();
+        animation-range: entry 30% cover 55%;
+      }
+    }
+  }
+
+  @keyframes closing-fill {
+    from {
+      background-size: 100% 0%;
+    }
+  }
+</style>

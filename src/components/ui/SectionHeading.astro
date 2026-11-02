@@ -16,7 +16,7 @@ const centered = align === 'center';
   {eyebrow && <p class:list={['eyebrow', centered && 'justify-center']} data-reveal>{eyebrow}</p>}
   <h2 id={id} class="heading-2 mt-6" data-reveal style="--reveal-delay:80">
     {title}
-    {accent && <span class="italic-accent mt-3 block">{accent}</span>}
+    {accent && <span class="heading-accent mt-3 block">{accent}</span>}
   </h2>
   {
     Astro.slots.has('default') && (

@@ -1,0 +1,99 @@
+---
+import Icon from '../ui/Icon.astro';
+import Wordmark from '../ui/Wordmark.astro';
+import { policyLinks, site, store, storeLinkLabel } from '../../data/site';
+import { footerCopy } from '../../data/home';
+import { products } from '../../products';
+import { globalNavLinks, isHomePath } from '../../lib/nav';
+
+interface Props {
+  /** Page-specific fine print (e.g. product image/stock disclaimer). */
+  note?: string;
+}
+
+const { note } = Astro.props;
+const isHome = isHomePath(Astro.url.pathname);
+const links = globalNavLinks(isHome);
+const year = new Date().getFullYear();
+const linkClass = 'link-underline inline-flex min-h-11 items-center text-[0.9375rem] text-mist-200 hover:text-bone-100';
+---
+
+<footer class="relative overflow-hidden border-t border-white/10 bg-ink-950/40">
+  <span class="backdrop-word -bottom-[0.18em] end-[-0.04em] text-[clamp(6rem,20vw,16rem)]" aria-hidden="true" lang="en">ELOURA</span>
+  <div class="container-x relative py-16 lg:py-20">
+    <div class="grid gap-12 md:grid-cols-12 md:gap-8">
+      <div class="md:col-span-5">
+        <a href={isHome ? '#top' : '/'} class="inline-block" aria-label={`${site.name} — الصفحة الرئيسية`}>
+          <Wordmark size="lg" />
+        </a>
+        <p class="mt-6 max-w-sm text-[0.95rem] leading-relaxed text-mist-300">{footerCopy.tagline}</p>
+      </div>
+
+      <nav aria-label={footerCopy.productsTitle} class="md:col-span-4">
+        <p class="label text-bone-500">{footerCopy.productsTitle}</p>
+        <ul class="mt-4 space-y-1">
+          {
+            products.map((product) => (
+              <li>
+                <a
+                  href={product.route}
+                  class={linkClass}
+                  data-track="product-card"
+                  data-product-id={product.id}
+                  data-product-name={product.nameEn}
+                >
+                  {product.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav aria-label={footerCopy.siteTitle} class="md:col-span-3">
+        <p class="label text-bone-500" lang="en">{footerCopy.siteTitle}</p>
+        <ul class="mt-4 space-y-1">
+          {
+            links.map((link) => (
+              <li>
+                <a href={link.href} class={linkClass}>
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+          <li>
+            <a href={store.url} class:list={[linkClass, 'gap-2 text-bone-100']} data-track="store">
+              {storeLinkLabel}
+              <Icon name="bag" class="size-4 text-bone-500" />
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="hairline mt-14 border-t pt-8">
+      {
+        policyLinks.length > 0 && (
+          <ul class="mb-6 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+            {policyLinks.map((link) => (
+              <li>
+                <a href={link.href} target="_blank" rel="noopener" class="text-mist-300 underline decoration-mist-400/40 underline-offset-4 hover:text-bone-100">
+                  {link.label}
+                  <span class="sr-only"> (بيفتح في تاب جديدة)</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+      <div class="flex flex-col gap-3 md:flex-row md:items-baseline md:justify-between md:gap-10">
+        <div class="space-y-2">
+          {note && <p class="source-note max-w-2xl">{note}</p>}
+          <p class="source-note">{footerCopy.checkoutNote}</p>
+        </div>
+        <p class="source-note shrink-0" dir="ltr">© {year} {store.name}</p>
+      </div>
+    </div>
+  </div>
+</footer>

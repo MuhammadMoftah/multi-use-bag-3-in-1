@@ -1,57 +1,65 @@
 /**
- * Derives clean, single-subject crops from the owner-supplied product images in
- * `src/assets/imgs` (collages and infographics) into `src/assets/eloura`.
- * Originals are never modified. Re-run after replacing a source image:
+ * Derives clean, single-subject web images from the owner-supplied originals of
+ * each product (collages and ad banners). Every product keeps its own folder:
  *
- *   node scripts/prepare-product-images.mjs            # write crops
- *   node scripts/prepare-product-images.mjs --preview  # also write small previews to .preview/
+ *   src/assets/imgs/{product-slug}/            originals (never modified)
+ *   src/assets/imgs/{product-slug}/derived/    files written here, imported by the site
  *
- * Crop boxes are in source pixels: [left, top, width, height]. Infographic crops
- * deliberately exclude baked-in English text and unverified claims (e.g. "55L",
- * "Waterproof", "Wrinkle-Free").
+ *   node scripts/prepare-product-images.mjs                    # all products
+ *   node scripts/prepare-product-images.mjs <slug>             # one product
+ *   node scripts/prepare-product-images.mjs <slug> --preview   # also small previews in .preview/
+ *
+ * Crop boxes are in source pixels: [left, top, width, height]. Banner crops
+ * deliberately exclude baked-in text and unverified claims (e.g. "Premium
+ * Cotton", "L • XL • 2XL"). Output names are slug-safe (no spaces), which keeps
+ * the generated `srcset` URLs valid.
  */
 import sharp from 'sharp';
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
-const SRC = 'src/assets/imgs';
-const OUT = 'src/assets/eloura';
+const ASSETS = 'src/assets/imgs';
 const PREVIEW = '.preview';
 
-const crops = [
-  { out: 'hero-lifestyle', src: 'eloura_hero_4x_6144x4096.png', box: [1890, 0, 2016, 3590], width: 1600 },
-  { out: 'studio-black-cognac', src: 'Luxury Black and Cognac Travel Duffel.png' },
-  { out: 'set-black-tan', src: 'Luxury Black and Tan Travel Luggage Set.png' },
-  { out: 'organiser-pink-ar', src: 'Elegant Pink Travel Bag Organiser.png' },
-  { out: 'garment-suit', src: 'Premium Charcoal Travel Garment Bag Showcase.png', box: [0, 0, 976, 1254] },
-  { out: 'garment-dresses', src: 'Wrinkle-Resistant Garment Storage Solution.png', box: [0, 152, 1254, 1102] },
-  { out: 'detail-shoes', src: 'Premium Charcoal Travel Garment Bag Showcase.png', box: [989, 887, 260, 260] },
-  { out: 'shoe-compartment', src: 'Carry-On Garment Duffel Bag Infographic.png', box: [819, 756, 414, 364] },
-  { out: 'pink-shoulder', src: 'Blush Pink Duffel Bag Travel Collection.png', box: [0, 0, 761, 1254] },
-  { out: 'pink-hand-carry', src: 'Blush Pink Duffel Bag Travel Collection.png', box: [776, 0, 478, 645] },
-  { out: 'pink-crossbody', src: 'Blush Pink Duffel Bag Travel Collection.png', box: [776, 659, 478, 595] },
-  { out: 'cream-walk', src: 'Luxury Travel Weekender Lifestyle Collage.png', box: [0, 0, 618, 1254] },
-  { out: 'cream-couple', src: 'Luxury Travel Weekender Lifestyle Collage.png', box: [636, 0, 618, 618] },
-  { out: 'cream-trolley', src: 'Luxury Travel Weekender Lifestyle Collage.png', box: [636, 631, 618, 623] },
-  { out: 'open-blazer', src: '55L High-Capacity Garment Duffel Infographic.png', box: [0, 570, 627, 532] },
-  { out: 'packed-open', src: 'Luxury Travel Duffel Packing Guide.png', box: [54, 469, 833, 785] },
-];
+const products = {
+  'mens-black-oversized-t-shirt': [
+    { out: 'model-seated', src: 'Moody Industrial Portrait in Black.png' },
+    { out: 'packshot-front', src: 'Black Basic T-Shirt Advertisement zoomed .png' },
+    { out: 'detail-neckline', src: 'Black Sweatshirt, Silver Chain and Watch.png' },
+    { out: 'model-walk', src: 'Monochrome Blackwear Editorial Collage.png', box: [0, 0, 622, 650] },
+    { out: 'model-back', src: 'Monochrome Blackwear Editorial Collage.png', box: [631, 0, 623, 650] },
+    { out: 'model-standing', src: 'Luxury Black Oversized T-Shirt Campaign.png', box: [1150, 0, 386, 800] },
+    { out: 'fabric-texture', src: 'Firefly_gpt-image.png', box: [0, 690, 430, 334] },
+  ],
+};
 
-const preview = process.argv.includes('--preview');
-await mkdir(OUT, { recursive: true });
+const args = process.argv.slice(2);
+const preview = args.includes('--preview');
+const only = args.find((arg) => !arg.startsWith('--'));
+if (only && !products[only]) {
+  console.error(`Unknown product "${only}". Known: ${Object.keys(products).join(', ')}`);
+  process.exit(1);
+}
 if (preview) await mkdir(PREVIEW, { recursive: true });
 
-for (const { out, src, box, width } of crops) {
-  let image = sharp(path.join(SRC, src));
-  if (box) {
-    const [left, top, w, h] = box;
-    image = image.extract({ left, top, width: w, height: h });
-  }
-  if (width) image = image.resize({ width, withoutEnlargement: true });
-  const file = path.join(OUT, `${out}.jpg`);
-  const info = await image.jpeg({ quality: 90, mozjpeg: true }).toFile(file);
-  console.log(`${file}  ${info.width}x${info.height}`);
-  if (preview) {
-    await sharp(file).resize({ width: 420 }).jpeg({ quality: 70 }).toFile(path.join(PREVIEW, `${out}.jpg`));
+for (const [slug, crops] of Object.entries(products)) {
+  if (only && slug !== only) continue;
+  const srcDir = path.join(ASSETS, slug);
+  const outDir = path.join(srcDir, 'derived');
+  await mkdir(outDir, { recursive: true });
+
+  for (const { out, src, box, width } of crops) {
+    let image = sharp(path.join(srcDir, src));
+    if (box) {
+      const [left, top, w, h] = box;
+      image = image.extract({ left, top, width: w, height: h });
+    }
+    if (width) image = image.resize({ width, withoutEnlargement: true });
+    const file = path.join(outDir, `${out}.jpg`);
+    const info = await image.jpeg({ quality: 90, mozjpeg: true }).toFile(file);
+    console.log(`${file}  ${info.width}x${info.height}`);
+    if (preview) {
+      await sharp(file).resize({ width: 420 }).jpeg({ quality: 70 }).toFile(path.join(PREVIEW, `${slug}-${out}.jpg`));
+    }
   }
 }

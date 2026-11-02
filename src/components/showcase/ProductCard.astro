@@ -1,0 +1,181 @@
+---
+/**
+ * Editorial product card. Links to the product's internal landing page (never
+ * straight to the store); the purchase happens there. The whole card is
+ * clickable through a stretched title link, so screen readers get one link
+ * named after the product.
+ *
+ * `variant="feature"` lays the card out side by side for a collection with a
+ * single product; `grid` is the regular column card.
+ */
+import { Image } from 'astro:assets';
+import Icon from '../ui/Icon.astro';
+import { pad2 } from '../../lib/format';
+import type { Product } from '../../products';
+
+interface Props {
+  product: Product;
+  index: number;
+  cta: string;
+  variant?: 'grid' | 'feature';
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { product, index, cta, variant = 'grid', headingLevel: Heading = 'h3' } = Astro.props;
+const feature = variant === 'feature';
+const { cover, coverHover } = product;
+const sizes = feature ? '(min-width: 64rem) 40rem, (min-width: 48rem) 55vw, 92vw' : '(min-width: 64rem) 24rem, (min-width: 48rem) 46vw, 92vw';
+const widths = [400, 640, 826];
+---
+
+<article
+  class:list={[
+    'product-card group relative isolate rounded-[2rem] border border-white/10 bg-ink-850/70 p-3 transition-[border-color,background-color] duration-700 ease-out-soft sm:p-4',
+    feature && 'md:grid md:grid-cols-12 md:items-center md:gap-10 lg:gap-14',
+  ]}
+  data-reveal
+  style={`--reveal-delay:${(index % 3) * 90}`}
+>
+  <div class:list={['card-media relative overflow-hidden rounded-[1.5rem] bg-ink-800', feature ? 'aspect-[4/5] md:col-span-7 md:aspect-[5/6]' : 'aspect-[4/5]']}>
+    <Image
+      src={cover.src}
+      alt={cover.alt}
+      widths={widths}
+      sizes={sizes}
+      quality={66}
+      class="card-cover media-fill"
+      style={cover.position ? `object-position:${cover.position}` : undefined}
+    />
+    {
+      coverHover && (
+        <Image
+          src={coverHover.src}
+          alt=""
+          widths={widths.filter((w) => w <= coverHover.src.width)}
+          sizes={sizes}
+          quality={64}
+          class="card-hover media-fill"
+          style={coverHover.position ? `object-position:${coverHover.position}` : undefined}
+        />
+      )
+    }
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-950/70 via-transparent to-ink-950/30" aria-hidden="true"></div>
+    <span class="absolute start-5 top-5 font-display text-[0.8125rem] font-bold tracking-[0.2em] text-bone-100" lang="en" aria-hidden="true">{pad2(index)}</span>
+    <span class="tag absolute end-4 top-4 border-white/20 bg-ink-900/60 text-[0.8125rem] backdrop-blur-md">{product.category}</span>
+  </div>
+
+  <div class:list={['px-2 pt-6 pb-3 sm:px-3', feature && 'md:col-span-5 md:py-6 md:ps-0 md:pe-6 lg:pe-10']}>
+    <p class="label text-bone-500" lang="en">{product.nameEn}</p>
+    <Heading class:list={['mt-3 font-display leading-snug font-bold text-bone-100', feature ? 'heading-3 sm:text-[clamp(1.75rem,1.3rem+1.4vw,2.5rem)]' : 'text-[clamp(1.25rem,1.1rem+0.5vw,1.5rem)]']}>
+      <a
+        href={product.route}
+        class="card-link"
+        data-track="product-card"
+        data-product-id={product.id}
+        data-product-name={product.nameEn}
+      >
+        {product.name}
+      </a>
+    </Heading>
+    <p class:list={['mt-4 text-mist-300', feature ? 'lead' : 'text-[0.95rem] leading-relaxed']}>{product.shortDescription}</p>
+    {
+      product.features && product.features.length > 0 && (
+        <ul class="mt-6 flex flex-wrap gap-2" aria-label="مميزات المنتج">
+          {product.features.map((item) => (
+            <li class="tag text-[0.8125rem]">{item}</li>
+          ))}
+        </ul>
+      )
+    }
+    <span class:list={['card-cta mt-8 inline-flex items-center gap-3 text-[0.9375rem] font-bold text-bone-100', feature && 'md:mt-10']} aria-hidden="true">
+      <span class="card-cta-label">{cta}</span>
+      <span class="btn-round size-11 border-bone-300/35">
+        <Icon name="arrow" class="btn-arrow" />
+      </span>
+    </span>
+  </div>
+</article>
+
+<style>
+  .card-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+  }
+
+  .card-link:focus-visible {
+    outline: none;
+  }
+
+  .product-card:has(.card-link:focus-visible) {
+    outline: 2px solid var(--color-bone-100);
+    outline-offset: 4px;
+  }
+
+  .card-hover {
+    opacity: 0;
+  }
+
+  .card-cta-label {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 100% 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    padding-bottom: 0.15rem;
+    transition: background-size 0.6s var(--ease-out-soft);
+  }
+
+  @media (hover: hover) {
+    .product-card:hover {
+      border-color: rgb(242 240 235 / 0.22);
+      background-color: rgb(28 28 28 / 0.8);
+    }
+
+    .product-card:hover .card-cta-label {
+      background-position: 0 100%;
+      background-size: 100% 1px;
+    }
+
+    .product-card:hover .card-cta .btn-round {
+      border-color: var(--color-bone-100);
+      background: var(--color-bone-100);
+      color: var(--color-ink-900);
+    }
+
+    .product-card:hover .card-cta .btn-arrow {
+      transform: scaleX(-1) translateX(0.2rem);
+    }
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .card-cover,
+    .card-hover {
+      transition:
+        transform 1.6s var(--ease-out-soft),
+        opacity 0.9s var(--ease-out-soft),
+        clip-path 1.1s var(--ease-out-soft);
+    }
+
+    .card-hover {
+      clip-path: inset(100% 0 0 0);
+    }
+
+    .product-card:hover .card-cover {
+      transform: scale(1.06);
+    }
+
+    .product-card:hover .card-hover {
+      opacity: 1;
+      clip-path: inset(0 0 0 0);
+      transform: scale(1.02);
+    }
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: reduce) {
+    .product-card:hover .card-hover {
+      opacity: 1;
+    }
+  }
+</style>

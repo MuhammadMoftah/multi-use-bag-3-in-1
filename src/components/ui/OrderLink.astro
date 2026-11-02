@@ -1,17 +1,21 @@
 ---
-/** Purchase CTA: links to the live EasyOrders product page. */
+/**
+ * Purchase CTA: links (same tab) to the product's official EasyOrders page.
+ * `data-track="checkout"` feeds the click tracking in `src/scripts/tracking.ts`.
+ */
 import Icon from './Icon.astro';
-import { orderHref } from '../../lib/content.js';
+import type { Product } from '../../products';
 
 interface Props {
+  product: Pick<Product, 'id' | 'nameEn' | 'purchaseUrl'>;
   class?: string;
   arrow?: boolean;
 }
 
-const { class: className = 'btn', arrow = true } = Astro.props;
+const { product, class: className = 'btn', arrow = true } = Astro.props;
 ---
 
-<a href={orderHref} class={className} data-checkout>
+<a href={product.purchaseUrl} class={className} data-track="checkout" data-product-id={product.id} data-product-name={product.nameEn}>
   <slot />
   {arrow && <Icon name="arrow" class="btn-arrow" />}
 </a>

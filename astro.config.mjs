@@ -5,31 +5,26 @@ import vue from '@astrojs/vue';
 
 import tailwindcss from '@tailwindcss/vite';
 
-const productPath = '/3-in-1-travel-garment-duffel-bag';
-
 // https://astro.build/config
 export default defineConfig({
   // Set to the production origin (e.g. 'https://example.com') once known. It enables the
-  // canonical URL, og:url, og:image and absolute image URLs in the Product structured data.
+  // canonical URL, og:url, og:image and absolute image/page URLs in the structured data.
   // site: 'https://example.com',
 
   integrations: [vue()],
-
-  redirects: {
-    '/': productPath,
-  },
 
   build: {
     inlineStylesheets: 'always',
   },
 
   fonts: [
+    // Brand wordmark only.
     {
       provider: fontProviders.google(),
       name: 'Cormorant Garamond',
       cssVariable: '--font-cormorant',
       weights: [500],
-      styles: ['normal', 'italic'],
+      styles: ['italic'],
       subsets: ['latin'],
       fallbacks: [],
     },
@@ -37,27 +32,18 @@ export default defineConfig({
       provider: fontProviders.google(),
       name: 'Manrope',
       cssVariable: '--font-manrope',
-      weights: ['400 600'],
+      weights: ['400 800'],
       styles: ['normal'],
       subsets: ['latin'],
       fallbacks: [],
     },
-    // Arabic companions: Latin glyphs and digits keep coming from the fonts above, so the
+    // Arabic companion: Latin glyphs and digits keep coming from Manrope, so the
     // generic fallbacks live here (a generic family earlier in the stack would catch Arabic).
-    {
-      provider: fontProviders.google(),
-      name: 'Markazi Text',
-      cssVariable: '--font-markazi',
-      weights: [500],
-      styles: ['normal'],
-      subsets: ['arabic'],
-      fallbacks: ['Georgia', 'serif'],
-    },
     {
       provider: fontProviders.google(),
       name: 'IBM Plex Sans Arabic',
       cssVariable: '--font-plex-arabic',
-      weights: [400, 500, 600],
+      weights: [400, 500, 700],
       styles: ['normal'],
       subsets: ['arabic'],
       fallbacks: ['system-ui', 'sans-serif'],

@@ -1,76 +1,70 @@
 # Asset catalog
 
-All imagery is owner-supplied (`src/assets/imgs`). No stock, AI-generated or Solana East images are used.
-The site uses **crops** of those originals, written to `src/assets/eloura/` by
-`scripts/prepare-product-images.mjs`. Crop boxes are `[left, top, width, height]` in source pixels.
+Every product owns one folder: `src/assets/imgs/{product-slug}/`. Originals (owner-supplied, never edited)
+sit at the top level; `scripts/prepare-product-images.mjs` writes clean, single-subject, slug-safe JPEGs to
+`src/assets/imgs/{product-slug}/derived/`, and only those are imported by the site (through the product's
+`media.js`). No stock imagery is used, and no images are shared between products.
 
-Most originals are infographics with baked-in English text. Several of those texts make claims that are
-**not** in the verified product data, so every crop was chosen to exclude text:
+Original filenames contain spaces, which would end up in generated `srcset` URLs; the derived files avoid that.
 
-| Claim on infographic | Verified data |
+## mens-black-oversized-t-shirt
+
+Several originals are ad banners with baked-in text. Some of that text is **not** in the verified
+product data, so every image used on the site is either text-free already or cropped to exclude text:
+
+| Text on banner | Verified data |
 | --- | --- |
-| "55L" | Capacity not specified ("2–3 days", approximate) |
-| "Waterproof" | Water-resistant only |
-| "Keeps clothes wrinkle-free" | Helps reduce wrinkles; does not eliminate them |
-| "21 in" | 20.5 × 10 × 12.5 in (52 × 25 × 32 cm) |
+| "Premium Cotton" | Material is Summer Melton |
+| "L • XL • 2XL" | Featured size is 2XL; other sizes depend on stock |
+| "Long lasting quality", "Heavy fabric" | Not specified |
+| Colour list labelled "ألوان متاحة" | Colours exist, availability depends on stock |
 
-## Crops in use
+### Images in use
 
-| File (`src/assets/eloura/`) | Source (`src/assets/imgs/`) | Crop | Used for |
+Crop boxes are `[left, top, width, height]` in source pixels.
+
+| File (`derived/`) | Original | Crop | Used for |
 | --- | --- | --- | --- |
-| `hero-lifestyle.jpg` | `eloura_hero_4x_6144x4096.png` | `[1890,0,2016,3590]`, resized to 1600 w | Hero |
-| `studio-black-cognac.jpg` | `Luxury Black and Cognac Travel Duffel.png` | whole | Intro main image, order thumbnail, OG image, gallery |
-| `set-black-tan.jpg` | `Luxury Black and Tan Travel Luggage Set.png` | whole | How it works step 1, gallery |
-| `organiser-pink-ar.jpg` | `Elegant Pink Travel Bag Organiser.png` | whole (Arabic labels) | Gallery |
-| `garment-suit.jpg` | `Premium Charcoal Travel Garment Bag Showcase.png` | `[0,0,976,1254]` | Details (garment), gallery |
-| `garment-dresses.jpg` | `Wrinkle-Resistant Garment Storage Solution.png` | `[0,152,1254,1102]` | How it works step 2, gallery |
-| `detail-shoes.jpg` | `Premium Charcoal Travel Garment Bag Showcase.png` | `[989,887,260,260]` | How it works step 3 |
-| `shoe-compartment.jpg` | `Carry-On Garment Duffel Bag Infographic.png` | `[819,756,414,364]` | Details (shoes) |
-| `pink-shoulder.jpg` | `Blush Pink Duffel Bag Travel Collection.png` | `[0,0,761,1254]` | Features image, gallery |
-| `pink-hand-carry.jpg` | `Blush Pink Duffel Bag Travel Collection.png` | `[776,0,478,645]` | How it works step 4, gallery |
-| `pink-crossbody.jpg` | `Blush Pink Duffel Bag Travel Collection.png` | `[776,659,478,595]` | Details (strap) |
-| `cream-walk.jpg` | `Luxury Travel Weekender Lifestyle Collage.png` | `[0,0,618,1254]` | Details (bag), gallery |
-| `cream-couple.jpg` | `Luxury Travel Weekender Lifestyle Collage.png` | `[636,0,618,618]` | Gallery |
-| `cream-trolley.jpg` | `Luxury Travel Weekender Lifestyle Collage.png` | `[636,631,618,623]` | Gallery |
-| `open-blazer.jpg` | `55L High-Capacity Garment Duffel Infographic.png` | `[0,570,627,532]` | Intro inset circle, gallery |
-| `packed-open.jpg` | `Luxury Travel Duffel Packing Guide.png` | `[54,469,833,785]` | Features inset circle, gallery |
+| `model-seated.jpg` | `Moody Industrial Portrait in Black.png` | whole (1254²) | Product hero (LCP), OG images, gallery, homepage hero |
+| `packshot-front.jpg` | `Black Basic T-Shirt Advertisement zoomed .png` | whole (826 × 861) | Intro, order thumbnail, gallery, homepage product card |
+| `detail-neckline.jpg` | `Black Sweatshirt, Silver Chain and Watch.png` | whole (1254²) | Intro inset, material detail, gallery, homepage hero circle |
+| `model-walk.jpg` | `Monochrome Blackwear Editorial Collage.png` | `[0,0,622,650]` | Styling (front), gallery, homepage hero, card hover image |
+| `model-back.jpg` | `Monochrome Blackwear Editorial Collage.png` | `[631,0,623,650]` | Styling (back), gallery |
+| `model-standing.jpg` | `Luxury Black Oversized T-Shirt Campaign.png` | `[1150,0,386,800]` | Features image, gallery (`fit: contain`) |
+| `fabric-texture.jpg` | `Firefly_gpt-image.png` | `[0,690,430,334]` | Material main image, gallery |
 
-Role assignments live in `travelBagImages` and the gallery sequence in `galleryOrder`
-(`src/content/eloura-travel-bag.media.js`). Each entry carries Arabic `alt`, a `caption`, the `source`
-filename and an optional `object-position`.
+Role assignments live in `tshirtImages`, the gallery sequence in `galleryOrder`
+(`src/products/mens-black-oversized-t-shirt/media.js`), and the homepage roles (`cover`, `coverHover`,
+`highlightImages`) in `product.ts`. Each entry carries Arabic `alt`, a `caption`, the `source` filename and an
+optional `object-position` / `fit`.
 
-## Video
+`model-standing` (386 px wide) and `fabric-texture` (430 px wide) are small crops; supply larger
+originals to make them sharper on high-density screens.
 
-| File | Details | Used for |
-| --- | --- | --- |
-| `src/assets/imgs/video-1.mp4` | Owner-supplied demo, H.264 + AAC, 720 × 1280, 23.9 s, ≈7.7 MB, moov at start (streams immediately). Burned-in Arabic captions "اشتري دلوقتي! شنطة السفر العملية الترند". Shows unfolding to garment mode, packing clothes and shoes, folding back into the duffel, carrying | How it works section (`ProductVideo.vue`), served unmodified |
-| `src/assets/eloura/video-poster.jpg` | Frame at 12.6 s (unfolded, packed with clothes), 720 × 1280, extracted in the browser via canvas | Lazy poster image behind the video |
-
-The video is not re-encoded (no ffmpeg in the toolchain). If a smaller file is supplied later, keep it
-H.264 MP4 with "faststart" and replace the file in place.
-
-## Originals not used directly
+### Originals not used directly
 
 | File | Reason |
 | --- | --- |
-| `55L High-Capacity Garment Duffel Infographic.png` (full) | "55L" claim; only a text-free crop is used |
-| `Carry-On Garment Duffel Bag Infographic.png` (full) | "Waterproof" / "21 in" text; only a crop is used |
-| `Cream Leather Travel Duffel Features.png` | Text-heavy infographic |
-| `All-in-One Travel Garment Bag.png` | Text-heavy infographic |
-| `Luxury Black Duffel Feature Showcase.png` | Text-heavy infographic |
-| `Spacious Storage Travel Duffel Infographic.png` | Capacity claims |
-| `Travel in Style_ The Ultimate Weekender.png` | Baked-in headline; the hero source is a 4× upscale of it |
+| `Black Basic T-Shirt Advertisement.png` | Baked-in headline, "L • XL • 2XL" and button; the zoomed version is used |
+| `Gemini_Generated_Image_vp3pijvp3pijvp3p.jpg` | Same photo as `Moody Industrial Portrait in Black.png` with baked-in text |
+| `Firefly_gpt-image.png` (full) | English claims ("Premium Cotton", "Long lasting quality"); only the fabric crop is used |
+| `Luxury Black Oversized T-Shirt Campaign.png` (full) | Arabic infographic text; only the model crop is used |
+| `Premium Black Oversized T-Shirt Advert.png` | Infographic text; same model as the campaign crop |
+| `Premium Black Oversized T-Shirt Banner.png` | Infographic text |
+| `Premium Oversized T-Shirt Advertisement.png` | Infographic with colour list and size badge (availability not verified) |
+| `ELOURA Men’s Luxury Style Banner.png` | Shows a white T-shirt under an overshirt, not this product |
+
 ## Delivery
 
 Images are optimized at build time by `astro:assets` (`<Picture>` with AVIF/WebP, `<Image>`, `getImage`).
-The hero is eagerly loaded with `fetchpriority="high"` at quality 45 (widths 480–1600); everything
-else is lazy. The OG image is a 1200 × 630 JPEG generated from `studio-black-cognac.jpg`.
+Hero images are eagerly loaded with `fetchpriority="high"`; everything else is lazy. OG images are
+1200 × 630 JPEGs generated from `model-seated.jpg`.
 
 ## Replacing or adding an image
 
-1. Put the new original in `src/assets/imgs/` (keep the original filename).
-2. Add or edit its entry in `crops` in `scripts/prepare-product-images.mjs`, then run
-   `node scripts/prepare-product-images.mjs --preview` and check `.preview/<name>.jpg`.
-3. Add or update the entry in `src/content/eloura-travel-bag.media.js` (Arabic alt, caption, source)
-   and assign it to a role or to `galleryOrder`.
-4. Make sure the visible crop contains no claim that contradicts the product data above.
+1. Put the original in `src/assets/imgs/{slug}/` (keep the original filename).
+2. Add or edit its entry under the product's slug in `products` in `scripts/prepare-product-images.mjs`, then run
+   `node scripts/prepare-product-images.mjs {slug} --preview` and check `.preview/{slug}-<name>.jpg`.
+3. Import the derived file in the product's `media.js` (Arabic alt, caption, source) and assign it to a role
+   or to the gallery order.
+4. Make sure the visible image contains no claim that contradicts the product data.

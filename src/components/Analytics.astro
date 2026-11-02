@@ -1,28 +1,32 @@
 ---
 /**
- * Tracking tags, configured in `analytics` (src/content/eloura-travel-bag.content.js).
+ * Tracking tags, configured in `analytics` (src/data/site.ts).
  * Render once in <head> and once at the top of <body> (`placement="body"`, the
  * Meta Pixel <noscript> image, which is not valid inside <head>).
  *
  * Meta Pixel: official base code only (init + PageView), deferred until after
- * the window load event. The page is a single static document without
- * client-side routing, so PageView fires once per page load; the
- * `if(f.fbq)return` guard prevents a second bootstrap. ViewContent,
- * InitiateCheckout and Purchase are intentionally not sent from this site yet:
- * they will be set up together with EasyOrders' own Pixel integration. Never
- * send Purchase on a CTA click; orders are created on EasyOrders.
+ * the window load event. Pages are static documents without client-side
+ * routing, so PageView fires once per page load; the `if(f.fbq)return` guard
+ * prevents a second bootstrap. ViewContent, InitiateCheckout and Purchase are
+ * intentionally not sent from this site: they will be set up together with
+ * EasyOrders' own Pixel integration. Never send Purchase on a CTA click;
+ * orders are created on EasyOrders.
  *
- * GA4 (inactive while `ga4MeasurementId` is null): page view, view_item, and
- * begin_checkout on the first click of a `data-checkout` link.
+ * GA4 (inactive while `ga4MeasurementId` is null): page view, plus view_item
+ * on product landing pages (`product` prop).
+ *
+ * Click events (product cards, purchase CTAs, official store links) are sent
+ * by `src/scripts/tracking.ts`.
  */
-import { content } from '../lib/content.js';
+import { analytics, site } from '../data/site';
+import type { Product } from '../products';
 
 interface Props {
   placement?: 'head' | 'body';
+  product?: Pick<Product, 'id' | 'nameEn'>;
 }
 
-const { placement = 'head' } = Astro.props;
-const { analytics, commerce, product } = content;
+const { placement = 'head', product } = Astro.props;
 
 const pixelId = analytics.metaPixelId;
 if (pixelId !== null && !/^\d+$/.test(pixelId)) {
@@ -55,12 +59,7 @@ else window.addEventListener('load', schedule, { once: true });
 `;
 
 const ga4Id = analytics.ga4MeasurementId;
-const productInfo = {
-  name: product.nameEn,
-  id: product.slug,
-  currency: commerce.currency,
-  value: typeof commerce.price === 'number' ? commerce.price : null,
-};
+const viewItem = product ? { currency: site.currency, items: [{ item_id: product.id, item_name: product.nameEn }] } : null;
 ---
 
 {
@@ -83,20 +82,12 @@ const productInfo = {
   placement === 'head' && ga4Id && (
     <Fragment>
       <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${ga4Id}`} />
-      <script is:inline define:vars={{ ga4Id, productInfo }}>
+      <script is:inline define:vars={{ ga4Id, viewItem }}>
         window.dataLayer = window.dataLayer || [];
         window.gtag = function () { dataLayer.push(arguments); };
         gtag('js', new Date());
         gtag('config', ga4Id);
-        var item = { currency: productInfo.currency, items: [{ item_id: productInfo.id, item_name: productInfo.name }] };
-        if (productInfo.value !== null) { item.value = productInfo.value; item.items[0].price = productInfo.value; }
-        gtag('event', 'view_item', item);
-        var checkoutTracked = false;
-        document.addEventListener('click', function (event) {
-          if (checkoutTracked || !event.target.closest || !event.target.closest('a[data-checkout]')) return;
-          checkoutTracked = true;
-          gtag('event', 'begin_checkout', item);
-        });
+        if (viewItem) gtag('event', 'view_item', viewItem);
       </script>
     </Fragment>
   )
