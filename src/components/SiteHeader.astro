@@ -1,7 +1,6 @@
 ---
 import Icon from './ui/Icon.astro';
 import Wordmark from './ui/Wordmark.astro';
-import PalmFrond from './ui/PalmFrond.astro';
 import OrderLink from './ui/OrderLink.astro';
 import { content } from '../lib/content.js';
 
@@ -16,26 +15,26 @@ interface Props {
 
 const { items } = Astro.props;
 const { product, store, ctas } = content;
-const homeLabel = `${store.name} Travel Essentials — ${product.name}: الرجوع لأول الصفحة`;
+const homeLabel = `${store.name} ${store.tagline} — ${product.name}: الرجوع لأول الصفحة`;
 const floatingHomeLabel = `${store.name} — ${product.name}: الرجوع لأول الصفحة`;
 const navLink =
-  'nav-link relative inline-flex min-h-10 items-center rounded-full border border-transparent px-4 text-[0.875rem] text-mist-200 transition-colors duration-300 hover:text-champagne-100 data-[active]:border-champagne-300/45 data-[active]:text-champagne-100';
+  'nav-link relative inline-flex min-h-10 items-center rounded-full border border-transparent px-4 text-[0.875rem] text-mist-200 transition-colors duration-300 hover:text-bone-100 data-[active]:border-bone-300/45 data-[active]:text-bone-100';
 ---
 
 <header id="site-header" class="absolute inset-x-0 top-0 z-30">
   <div class="container-x grid grid-cols-[1fr_auto_1fr] items-center gap-4 pt-5 lg:pt-8">
     <p class="label hidden items-center gap-2 text-mist-300 lg:flex">
-      <Icon name="bag" class="size-4 text-champagne-500" />
+      <Icon name="shirt" class="size-4 text-bone-500" />
       {product.name}
     </p>
     <a href="#top" class="col-start-1 justify-self-start lg:col-start-2 lg:justify-self-center" aria-label={homeLabel}>
       <Wordmark />
     </a>
     <div class="col-start-3 flex items-center justify-self-end gap-2">
-      <OrderLink class="btn hidden min-h-11 bg-night-900/55 px-5 backdrop-blur-md sm:inline-flex" arrow={false}>{ctas.header}</OrderLink>
+      <OrderLink class="btn hidden min-h-11 bg-ink-900/55 px-5 backdrop-blur-md sm:inline-flex" arrow={false}>{ctas.header}</OrderLink>
       <button
         type="button"
-        class="menu-toggle btn-round bg-night-900/55 backdrop-blur-md xl:hidden"
+        class="menu-toggle btn-round bg-ink-900/55 backdrop-blur-md xl:hidden"
         aria-expanded="false"
         aria-controls="mobile-menu"
         data-requires-js
@@ -47,7 +46,7 @@ const navLink =
   </div>
 
   <nav aria-label="القائمة الرئيسية" class="mt-5 hidden justify-center xl:flex">
-    <ul class="flex items-center gap-0.5 rounded-full border border-champagne-300/12 bg-night-900/55 p-1 backdrop-blur-md">
+    <ul class="flex items-center gap-0.5 rounded-full border border-bone-300/12 bg-ink-900/55 p-1 backdrop-blur-md">
       {
         items.map((item) => (
           <li>
@@ -67,9 +66,9 @@ const navLink =
   inert
 >
   <div
-    class="flex w-full max-w-[72rem] items-center justify-between gap-4 rounded-full border border-champagne-300/20 bg-night-900/80 py-2 ps-6 pe-2 shadow-[0_1.5rem_3rem_-1.5rem_rgb(0_0_0/0.6)] backdrop-blur-xl"
+    class="flex w-full max-w-[72rem] items-center justify-between gap-4 rounded-full border border-bone-300/20 bg-ink-900/80 py-2 ps-6 pe-2 shadow-[0_1.5rem_3rem_-1.5rem_rgb(0_0_0/0.6)] backdrop-blur-xl"
   >
-    <a href="#top" class="font-display text-[1.35rem] leading-none text-champagne-300 italic" aria-label={floatingHomeLabel} lang="en">
+    <a href="#top" class="font-brand text-[1.45rem] leading-none text-bone-100 italic" aria-label={floatingHomeLabel} lang="en">
       {store.name}
     </a>
     <nav aria-label="القائمة الرئيسية (مختصرة)" class="hidden xl:block">
@@ -97,13 +96,13 @@ const navLink =
 
 <div
   id="mobile-menu"
-  class="invisible fixed inset-0 z-[60] flex flex-col overflow-hidden bg-night-950 opacity-0 transition-[opacity,visibility] duration-500 ease-out-soft data-[open]:visible data-[open]:opacity-100 data-[open]:transition-opacity xl:hidden"
+  class="invisible fixed inset-0 z-[60] flex flex-col overflow-hidden bg-ink-950 opacity-0 transition-[opacity,visibility] duration-500 ease-out-soft data-[open]:visible data-[open]:opacity-100 data-[open]:transition-opacity xl:hidden"
   role="dialog"
   aria-modal="true"
   aria-label="قائمة الموقع"
   inert
 >
-  <PalmFrond class="decor-frond -bottom-16 -left-24 w-[26rem] rotate-[20deg] -scale-x-100 text-night-800" />
+  <span class="backdrop-word -bottom-6 -start-4 text-[clamp(7rem,30vw,14rem)]" aria-hidden="true" lang="en">ELOURA</span>
   <div class="container-x relative flex items-center justify-between pt-5">
     <Wordmark />
     <button type="button" id="menu-close" class="btn-round">
@@ -118,9 +117,9 @@ const navLink =
           <li class="menu-item" style={`--i:${index}`}>
             <a
               href={item.href}
-              class="flex items-baseline gap-5 py-2 font-display text-[clamp(1.75rem,7vw,2.75rem)] leading-snug text-champagne-300 transition-colors hover:text-champagne-50"
+              class="flex items-baseline gap-5 py-2 font-display text-[clamp(1.75rem,7vw,2.75rem)] leading-snug font-bold text-bone-100 transition-colors hover:text-white"
             >
-              <span class="font-sans text-[0.75rem] font-semibold tracking-[0.2em] text-champagne-500" lang="en">
+              <span class="font-sans text-[0.75rem] font-semibold tracking-[0.2em] text-bone-500" lang="en">
                 {String(index + 1).padStart(2, '0')}
               </span>
               {item.label}

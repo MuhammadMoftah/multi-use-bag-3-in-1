@@ -1,0 +1,105 @@
+---
+import { getImage } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import Hero from '../components/sections/Hero.astro';
+import ProductIntro from '../components/sections/ProductIntro.astro';
+import Features from '../components/sections/Features.astro';
+import Gallery from '../components/sections/Gallery.astro';
+import Material from '../components/sections/Material.astro';
+import Styling from '../components/sections/Styling.astro';
+import Specifications from '../components/sections/Specifications.astro';
+import Faq from '../components/sections/Faq.astro';
+import Order from '../components/sections/Order.astro';
+import { tshirtImages } from '../content/eloura-oversized-tshirt.media.js';
+import { content, faqItems } from '../lib/content.js';
+
+const { seo, product, commerce, store, packageContents, colors } = content;
+
+const ogImage = await getImage({
+  src: tshirtImages.ogImage.src,
+  width: 1200,
+  height: 630,
+  fit: 'cover',
+  position: 'top',
+  format: 'jpg',
+  quality: 75,
+});
+const absolute = (path: string) => (Astro.site ? new URL(path, Astro.site).href : undefined);
+const pageUrl = absolute(Astro.url.pathname);
+const imageUrl = absolute(ogImage.src);
+
+// Price and availability are only published once verified (`commerce.price` / `checkoutUrl`).
+const offer =
+  typeof commerce.price === 'number' && commerce.checkoutUrl
+    ? { '@type': 'Offer', price: commerce.price, priceCurrency: commerce.currency, url: commerce.checkoutUrl }
+    : undefined;
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Product',
+      '@id': '#product',
+      name: product.name,
+      alternateName: product.nameEn,
+      description: seo.description,
+      category: product.categoryEn,
+      brand: { '@type': 'Brand', name: product.manufacturerBrand },
+      material: product.materialEn,
+      color: product.colorEn,
+      size: product.featuredSize,
+      ...(imageUrl && { image: [imageUrl] }),
+      ...(pageUrl && { url: pageUrl }),
+      audience: { '@type': 'PeopleAudience', suggestedGender: 'male' },
+      additionalProperty: [
+        { '@type': 'PropertyValue', name: 'Fit', value: product.fitEn },
+        { '@type': 'PropertyValue', name: 'Colour range (subject to stock)', value: colors.map((c: any) => c.nameEn).join(', ') },
+        { '@type': 'PropertyValue', name: 'Package contents', value: packageContents.join('، ') },
+      ],
+      ...(offer && { offers: offer }),
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: faqItems.map((item: any) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: { '@type': 'Answer', text: item.answer },
+      })),
+    },
+    {
+      '@type': 'WebPage',
+      name: seo.title,
+      description: seo.description,
+      inLanguage: 'ar-EG',
+      about: { '@id': '#product' },
+      publisher: { '@type': 'Organization', name: store.name, ...(store.url && { url: store.url }) },
+    },
+  ],
+};
+---
+
+<Layout
+  title={seo.title}
+  description={seo.description}
+  ogImage={ogImage.src}
+  ogImageAlt={tshirtImages.ogImage.alt}
+  structuredData={structuredData}
+>
+  <div class="page-shell">
+    <SiteHeader items={content.nav} />
+    <main id="main">
+      <Hero />
+      <ProductIntro />
+      <Features />
+      <Gallery />
+      <Material />
+      <Styling />
+      <Specifications />
+      <Faq />
+      <Order />
+    </main>
+    <SiteFooter items={content.nav} />
+  </div>
+</Layout>

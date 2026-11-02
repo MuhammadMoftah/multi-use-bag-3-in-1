@@ -1,5 +1,7 @@
 ---
 /** Typographic Eloura wordmark (no official logo file has been supplied). */
+import { content } from '../../lib/content.js';
+
 interface Props {
   size?: 'sm' | 'md' | 'lg';
   class?: string;
@@ -14,6 +16,6 @@ const sizes = {
 ---
 
 <span class:list={['inline-flex flex-col items-center leading-none', className]} lang="en" dir="ltr">
-  <span class:list={['font-display whitespace-nowrap text-champagne-300 italic', sizes[size]]}>Eloura</span>{' '}
-  <span class="mt-1 text-[0.55rem] font-semibold tracking-[0.32em] whitespace-nowrap text-champagne-500 uppercase">Travel Essentials</span>
+  <span class:list={['font-brand whitespace-nowrap text-bone-100 italic', sizes[size]]}>{content.store.name}</span>{' '}
+  <span class="mt-1 text-[0.55rem] font-semibold tracking-[0.42em] whitespace-nowrap text-bone-500 uppercase">{content.store.tagline}</span>
 </span>

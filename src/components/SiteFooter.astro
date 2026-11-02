@@ -16,9 +16,9 @@ const storeLinks = footer.links
 const year = new Date().getFullYear();
 ---
 
-<footer class="relative border-t border-champagne-300/15 bg-night-950/40">
+<footer class="relative border-t border-white/10 bg-ink-950/40">
   <div class="container-x py-16 text-center lg:py-20">
-    <a href="#top" class="inline-block" aria-label={`${store.name} Travel Essentials — الرجوع لأول الصفحة`}>
+    <a href="#top" class="inline-block" aria-label={`${store.name} ${store.tagline} — الرجوع لأول الصفحة`}>
       <Wordmark size="lg" />
     </a>
 
@@ -27,14 +27,14 @@ const year = new Date().getFullYear();
         {
           items.map((item) => (
             <li>
-              <a href={item.href} class="link-underline inline-flex min-h-11 items-center px-3 text-[0.875rem] text-mist-200 hover:text-champagne-100">
+              <a href={item.href} class="link-underline inline-flex min-h-11 items-center px-3 text-[0.875rem] text-mist-200 hover:text-bone-100">
                 {item.label}
               </a>
             </li>
           ))
         }
         <li>
-          <OrderLink class="link-underline inline-flex min-h-11 items-center px-3 text-[0.875rem] text-champagne-300 hover:text-champagne-100" arrow={false}>
+          <OrderLink class="link-underline inline-flex min-h-11 items-center px-3 text-[0.875rem] text-bone-300 hover:text-bone-100" arrow={false}>
             {ctas.header}
           </OrderLink>
         </li>
@@ -51,7 +51,7 @@ const year = new Date().getFullYear();
           <ul class="mb-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm">
             {storeLinks.map((link: any) => (
               <li>
-                <a href={link.href} target="_blank" rel="noopener" class="text-mist-300 underline decoration-mist-400/40 underline-offset-4 hover:text-champagne-100">
+                <a href={link.href} target="_blank" rel="noopener" class="text-mist-300 underline decoration-mist-400/40 underline-offset-4 hover:text-bone-100">
                   {link.label}
                   <span class="sr-only"> (بيفتح في تاب جديدة)</span>
                 </a>

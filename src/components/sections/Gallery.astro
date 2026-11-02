@@ -1,7 +1,7 @@
 ---
 import { getImage } from 'astro:assets';
 import GalleryShowcase from '../gallery/GalleryShowcase.vue';
-import media, { galleryOrder } from '../../content/eloura-travel-bag.media.js';
+import media, { galleryOrder } from '../../content/eloura-oversized-tshirt.media.js';
 import { content } from '../../lib/content.js';
 
 const { gallery } = content;
@@ -10,15 +10,16 @@ const items = await Promise.all(
   galleryOrder.map(async (id) => {
     const entry: any = media[id as keyof typeof media];
     const [featured, thumb, full] = await Promise.all([
-      getImage({ src: entry.src, widths: [640, 960, 1280], format: 'webp', quality: 62 }),
-      getImage({ src: entry.src, widths: [240, 360, 480], format: 'webp', quality: 58 }),
-      getImage({ src: entry.src, width: 1600, format: 'webp', quality: 70 }),
+      getImage({ src: entry.src, widths: [480, 720, 960, 1254], format: 'webp', quality: 64 }),
+      getImage({ src: entry.src, widths: [200, 320], format: 'webp', quality: 58 }),
+      getImage({ src: entry.src, width: 1600, format: 'webp', quality: 72 }),
     ]);
     return {
       id,
       alt: entry.alt,
       caption: entry.caption,
       position: entry.position,
+      fit: entry.fit ?? 'cover',
       // Reading entry.src.* for URLs would make Astro copy the original into dist.
       width: Number(featured.attributes.width),
       height: Number(featured.attributes.height),
@@ -41,8 +42,8 @@ const items = await Promise.all(
       </div>
       <p class="lead lg:col-span-5 lg:pb-2" data-reveal style="--reveal-delay:140">{gallery.description}</p>
     </div>
-    <div class="mt-14 lg:mt-16" data-reveal="fade">
-      <GalleryShowcase client:visible items={items} label="صور شنطة السفر الترند 3 في 1" />
+    <div class="mt-12 lg:mt-16" data-reveal="fade">
+      <GalleryShowcase client:visible items={items} label={gallery.label} />
     </div>
   </div>
 </section>

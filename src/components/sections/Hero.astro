@@ -1,56 +1,57 @@
 ---
 import { Picture } from 'astro:assets';
 import OrderLink from '../ui/OrderLink.astro';
-import { travelBagImages } from '../../content/eloura-travel-bag.media.js';
+import { tshirtImages } from '../../content/eloura-oversized-tshirt.media.js';
 import { content } from '../../lib/content.js';
 
 const { hero, ctas } = content;
-const image = travelBagImages.hero;
+const image = tshirtImages.hero;
 ---
 
 <section id="top" class="relative isolate overflow-hidden lg:min-h-[min(100svh,58rem)]" aria-labelledby="hero-title">
-  <div
-    class="shape-hero-mobile-mirror relative h-[min(68svh,34rem)] w-full overflow-hidden sm:h-[min(70svh,40rem)] lg:shape-hero-mirror lg:absolute lg:end-0 lg:top-0 lg:h-full lg:w-[55%]"
-  >
+  <div class="relative h-[min(64svh,34rem)] w-full overflow-hidden sm:h-[min(70svh,42rem)] lg:absolute lg:end-0 lg:top-0 lg:h-full lg:w-[54%]">
     <Picture
       src={image.src}
       alt={image.alt}
       formats={['avif', 'webp']}
-      widths={[480, 800, 1080, 1280, 1600]}
-      sizes="(min-width: 64rem) 55vw, 100vw"
-      quality={45}
+      widths={[480, 800, 1080, 1254]}
+      sizes="(min-width: 64rem) 54vw, 100vw"
+      quality={50}
       priority
-      class="media-fill animate-unveil object-[50%_62%] lg:object-[50%_72%]"
+      class="media-fill animate-unveil object-[48%_0%] lg:object-[50%_20%]"
       pictureAttributes={{ class: 'contents' }}
     />
-    <div class="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-night-900/80 to-transparent lg:hidden" aria-hidden="true"></div>
-    <div class="absolute inset-0 bg-night-900/10" aria-hidden="true"></div>
+    <div class="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-ink-900/85 to-transparent" aria-hidden="true"></div>
+    <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink-900 to-transparent lg:hidden" aria-hidden="true"></div>
+    <div class="absolute inset-y-0 start-0 hidden w-2/5 bg-gradient-to-l from-ink-900 to-transparent lg:block" aria-hidden="true"></div>
   </div>
 
-  <div class="container-x relative pb-20 lg:flex lg:min-h-[min(100svh,58rem)] lg:items-center lg:pt-44 lg:pb-24">
-    <div class="-mt-4 max-w-xl animate-settle sm:-mt-10 lg:mt-0 lg:w-[42%] lg:max-w-none">
+  <span class="backdrop-word -bottom-8 start-[-1%] hidden text-[15rem] lg:block" aria-hidden="true" lang="en">OVERSIZED</span>
+
+  <div class="container-x relative pb-20 lg:flex lg:min-h-[min(100svh,58rem)] lg:items-center lg:pt-40 lg:pb-24">
+    <div class="-mt-24 max-w-xl animate-settle sm:-mt-32 lg:mt-0 lg:w-[44%] lg:max-w-none">
       <p class="eyebrow" lang="en">{hero.eyebrow}</p>
-      <h1 id="hero-title" class="display-1 mt-7 text-[clamp(2.4rem,1.5rem+2.9vw,4.25rem)]">
+      <h1 id="hero-title" class="display-1 mt-6 text-[clamp(2.6rem,1.6rem+3.6vw,5rem)]">
         {hero.heading}
-        <span class="italic-accent mt-4 block">{hero.accent}</span>
+        <span class="heading-accent mt-4 block text-bone-300">{hero.subheading}</span>
       </h1>
-      <p class="lead mt-8 max-w-[32rem]">{hero.description}</p>
-      <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-5">
-        <OrderLink class="btn btn-solid">{ctas.primary}</OrderLink>
-        <a href="#features" class="link-underline pb-1 text-[0.875rem] font-semibold text-champagne-300">
+      <p class="lead mt-6 max-w-[30rem]">{hero.description}</p>
+      <div class="mt-9 flex flex-wrap items-center gap-x-8 gap-y-5">
+        <OrderLink class="btn btn-solid min-h-13 px-9">{ctas.primary}</OrderLink>
+        <a href="#product" class="link-underline pb-1 text-[0.9375rem] font-semibold text-bone-100">
           {ctas.explore}
         </a>
       </div>
-      <ul class="hairline mt-14 grid gap-3 border-t pt-7 sm:grid-cols-3 sm:gap-6">
+      <dl class="hairline mt-12 grid grid-cols-3 gap-4 border-t pt-6 sm:gap-8">
         {
-          hero.highlights.map((item: string) => (
-            <li class="meta flex gap-3 sm:block">
-              <span class="mt-2.5 block h-px w-5 shrink-0 bg-champagne-500 sm:mt-0 sm:mb-3" aria-hidden="true" />
-              {item}
-            </li>
+          hero.highlights.map((item: any) => (
+            <div>
+              <dt class="meta">{item.label}</dt>
+              <dd class="mt-1 text-[0.95rem] font-bold text-bone-100 sm:text-base">{item.value}</dd>
+            </div>
           ))
         }
-      </ul>
+      </dl>
     </div>
   </div>
 </section>

@@ -1,19 +1,17 @@
 ---
 import { Image } from 'astro:assets';
-import PalmFrond from '../ui/PalmFrond.astro';
 import Icon from '../ui/Icon.astro';
 import OrderLink from '../ui/OrderLink.astro';
-import { travelBagImages } from '../../content/eloura-travel-bag.media.js';
+import { tshirtImages } from '../../content/eloura-oversized-tshirt.media.js';
 import { content, formatPrice } from '../../lib/content.js';
 
-const { order, ctas, product, packageContents } = content;
+const { order, ctas, product, colors, packageContents } = content;
 const price = formatPrice();
-const thumb = travelBagImages.orderThumb;
+const thumb = tshirtImages.orderThumb;
 ---
 
 <section id="order" class="section overflow-hidden" aria-labelledby="order-title">
-  <PalmFrond class="decor-frond -right-28 -bottom-24 w-[24rem] rotate-[8deg] -scale-x-100 sm:w-[30rem]" />
-  <PalmFrond class="decor-frond -top-10 -left-36 w-[30rem] rotate-[200deg] -scale-x-100 max-md:hidden" />
+  <span class="backdrop-word -bottom-10 start-1/2 translate-x-1/2 text-[clamp(8rem,22vw,20rem)]" aria-hidden="true" lang="en">ELOURA</span>
 
   <div class="container-x relative">
     <div class="grid gap-10 lg:grid-cols-12 lg:items-end">
@@ -26,34 +24,49 @@ const thumb = travelBagImages.orderThumb;
         price && (
           <div class="lg:col-span-5 lg:justify-self-end" data-reveal style="--reveal-delay:180">
             <p class="label">{order.priceLabel}</p>
-            <p class="mt-3 font-display text-[clamp(1.75rem,1.4rem+1.2vw,2.5rem)] leading-none text-champagne-300">{price}</p>
+            <p class="mt-3 font-display text-[clamp(1.75rem,1.4rem+1.2vw,2.5rem)] leading-none font-extrabold text-bone-100">{price}</p>
           </div>
         )
       }
     </div>
 
-    <div
-      class="mt-16 rounded-[2rem] border border-champagne-300/20 bg-night-900/70 p-6 backdrop-blur-sm sm:p-10 lg:mt-20 lg:rounded-[2.75rem] lg:p-14"
-      data-reveal="fade"
-    >
+    <div class="mt-14 rounded-[2rem] border border-white/10 bg-ink-850/80 p-6 backdrop-blur-sm sm:p-10 lg:mt-16 lg:rounded-[2.5rem] lg:p-14" data-reveal="fade">
       <div class="grid items-center gap-10 md:grid-cols-[auto_1fr] md:gap-14">
-        <div class="shape-circle hover-zoom relative mx-auto w-44 border border-champagne-300/30 sm:w-56">
-          <Image src={thumb.src} alt={thumb.alt} widths={[240, 360, 480]} sizes="(min-width: 40rem) 14rem, 11rem" quality={62} class="media-fill" />
+        <div class="frame hover-zoom relative mx-auto aspect-[826/861] w-48 sm:w-60">
+          <Image src={thumb.src} alt={thumb.alt} widths={[240, 360, 480]} sizes="(min-width: 40rem) 15rem, 12rem" quality={64} class="media-fill" />
         </div>
         <div>
-          <p class="font-display text-[clamp(1.5rem,1.2rem+1vw,2.125rem)] leading-snug text-champagne-300">{product.name}</p>
+          <p class="font-display text-[clamp(1.5rem,1.2rem+1vw,2.125rem)] leading-snug font-bold text-bone-100">{product.name}</p>
           <p class="meta mt-1"><span lang="en" dir="ltr">{product.nameEn}</span></p>
-          <p class="label mt-8 text-champagne-500">{order.contentsTitle}</p>
-          <ul class="mt-4 grid gap-3 sm:grid-cols-3">
-            {
-              packageContents.map((item: string) => (
-                <li class="flex gap-2.5 text-[0.95rem] text-champagne-100">
-                  <Icon name="check" class="mt-1 size-4 shrink-0 text-champagne-500" />
-                  {item}
-                </li>
-              ))
-            }
-          </ul>
+
+          <div class="mt-8 grid gap-8 sm:grid-cols-2">
+            <div>
+              <p class="label text-bone-500">{order.colorsTitle}</p>
+              <ul class="mt-4 flex flex-wrap gap-3">
+                {
+                  colors.map((color: any) => (
+                    <li>
+                      <span class="swatch size-7" style={`background:${color.hex}`} title={color.name} aria-hidden="true" />
+                      <span class="sr-only">{color.name}</span>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+            <div>
+              <p class="label text-bone-500">{order.contentsTitle}</p>
+              <ul class="mt-4 space-y-2">
+                {
+                  packageContents.map((item: string) => (
+                    <li class="flex gap-2.5 text-[0.95rem] text-bone-100">
+                      <Icon name="check" class="mt-1 size-4 shrink-0 text-bone-500" />
+                      {item}
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
 

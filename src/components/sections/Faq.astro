@@ -11,7 +11,7 @@ const { faq } = content;
       <p class="eyebrow" data-reveal>{faq.eyebrow}</p>
       <h2 id="faq-title" class="heading-2 mt-6" data-reveal style="--reveal-delay:80">
         {faq.heading}
-        <span class="italic-accent mt-3 block">{faq.accent}</span>
+        <span class="heading-accent mt-3 block">{faq.accent}</span>
       </h2>
     </div>
     <div class="hairline border-t lg:col-span-8" data-reveal style="--reveal-delay:120">
@@ -19,7 +19,7 @@ const { faq } = content;
         faqItems.map((item: any) => (
           <details name="faq" class="group hairline border-b">
             <summary class="flex min-h-16 cursor-pointer list-none items-center justify-between gap-6 py-6 text-start [&::-webkit-details-marker]:hidden">
-              <span class="font-display text-[clamp(1.25rem,1.1rem+0.6vw,1.625rem)] leading-snug text-champagne-100">{item.question}</span>
+              <span class="font-display text-[clamp(1.25rem,1.1rem+0.6vw,1.625rem)] leading-snug text-bone-100">{item.question}</span>
               <span class="btn-round size-10 shrink-0">
                 <Icon name="plus" class="size-4 transition-transform duration-500 group-open:rotate-45" />
               </span>

@@ -1,44 +1,41 @@
 ---
 import { Image } from 'astro:assets';
-import { travelBagImages } from '../../content/eloura-travel-bag.media.js';
+import { tshirtImages } from '../../content/eloura-oversized-tshirt.media.js';
 import { content } from '../../lib/content.js';
 
 const { intro } = content;
-const main = travelBagImages.productMain;
-const inset = travelBagImages.productInset;
+const main = tshirtImages.productMain;
+const inset = tshirtImages.productInset;
 ---
 
 <section id="product" class="section overflow-hidden" aria-labelledby="product-title">
-  <div class="grid items-center gap-y-16 lg:grid-cols-2 lg:gap-x-4">
-    <div class="relative pe-6 pb-[22%] sm:pe-16 lg:pe-10 lg:pb-[18%]">
-      <div class="shape-pebble-right hover-zoom relative aspect-[4/3] w-[92%] overflow-hidden" data-reveal="image">
-        <Image
-          src={main.src}
-          alt={main.alt}
-          widths={[480, 720, 960, 1280]}
-          sizes="(min-width: 64rem) 45vw, 92vw"
-          quality={62}
-          class="media-fill"
-        />
+  <div class="container-x grid items-center gap-y-16 lg:grid-cols-2 lg:gap-x-20">
+    <div class="relative pb-[18%] lg:order-2">
+      <div class="frame hover-zoom aspect-[826/861] w-[86%]" data-reveal="image">
+        <Image src={main.src} alt={main.alt} widths={[480, 640, 826]} sizes="(min-width: 64rem) 34vw, 80vw" quality={65} class="media-fill" />
       </div>
       <div
-        class="shape-circle hover-zoom absolute end-[6%] bottom-0 w-[44%] border-[6px] border-night-900 sm:end-[12%] lg:end-[6%]"
+        class="shape-circle hover-zoom absolute end-0 bottom-0 w-[42%] border-[6px] border-ink-900"
         data-reveal="scale"
         style="--reveal-delay:200"
       >
-        <Image src={inset.src} alt={inset.alt} widths={[360, 560]} sizes="(min-width: 64rem) 20vw, 42vw" quality={62} class="media-fill" />
+        <Image
+          src={inset.src}
+          alt={inset.alt}
+          widths={[320, 480, 640]}
+          sizes="(min-width: 64rem) 18vw, 40vw"
+          quality={62}
+          class="media-fill"
+          style={inset.position ? `object-position:${inset.position}` : undefined}
+        />
       </div>
-      <span
-        class="absolute start-[8%] bottom-[12%] hidden size-28 rounded-full border border-champagne-300/25 sm:block"
-        aria-hidden="true"
-      ></span>
     </div>
 
-    <div class="container-x lg:mx-0 lg:max-w-[38rem] lg:ps-8 lg:pe-16">
+    <div>
       <p class="eyebrow" data-reveal>{intro.eyebrow}</p>
       <h2 id="product-title" class="heading-2 mt-6" data-reveal style="--reveal-delay:80">
         {intro.heading}
-        <span class="italic-accent mt-4 block">{intro.accent}</span>
+        <span class="heading-accent mt-4 block">{intro.accent}</span>
       </h2>
       {
         intro.paragraphs.map((text: string, index: number) => (
@@ -47,20 +44,21 @@ const inset = travelBagImages.productInset;
           </p>
         ))
       }
-      <p class="mt-5 text-[0.95rem] font-semibold text-champagne-100" data-reveal style="--reveal-delay:220">{intro.closing}</p>
 
-      <dl class="hairline mt-12 grid grid-cols-2 gap-x-6 gap-y-8 border-t pt-8 sm:grid-cols-3 sm:gap-8" data-reveal style="--reveal-delay:240">
+      <dl class="hairline mt-12 flex flex-wrap gap-x-10 gap-y-8 border-t pt-8 sm:gap-x-14" data-reveal style="--reveal-delay:240">
         {
-          intro.figures.map((figure: any, index: number) => (
-            <div class:list={[index === 2 && 'col-span-2 sm:col-span-1']}>
+          intro.figures.map((figure: any) => (
+            <div>
               <dt class="sr-only">{figure.detail}</dt>
               <dd>
-                <span class="block font-display text-[clamp(1.75rem,1.3rem+1.7vw,2.75rem)] leading-none whitespace-nowrap text-champagne-300">
-                  {figure.value}
-                  <span class="ms-1 font-sans text-[0.8125rem] text-champagne-500">
-                    {figure.unit}
-                    {figure.starred && <sup aria-hidden="true">*</sup>}
-                  </span>
+                <span class="block font-display text-[clamp(1.5rem,1.1rem+1.4vw,2.25rem)] leading-none font-extrabold whitespace-nowrap text-bone-100">
+                  <span lang={figure.lang} dir={figure.lang ? 'ltr' : undefined}>{figure.value}</span>
+                  {figure.unit && (
+                    <span class="ms-1 font-sans text-[0.8125rem] font-medium text-bone-500">
+                      {figure.unit}
+                      {figure.starred && <sup aria-hidden="true">*</sup>}
+                    </span>
+                  )}
                 </span>
                 <span class="meta mt-3 block" aria-hidden="true">
                   {figure.detail}

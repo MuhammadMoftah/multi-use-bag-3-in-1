@@ -1,4 +1,4 @@
-import * as content from '../content/eloura-travel-bag.content.js';
+import * as content from '../content/eloura-oversized-tshirt.content.js';
 
 export { content };
 

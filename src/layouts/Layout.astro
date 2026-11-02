@@ -8,10 +8,11 @@ interface Props {
   title: string;
   description: string;
   ogImage?: string;
+  ogImageAlt?: string;
   structuredData?: Record<string, unknown>;
 }
 
-const { title, description, ogImage, structuredData } = Astro.props;
+const { title, description, ogImage, ogImageAlt, structuredData } = Astro.props;
 const { store, seo } = content;
 const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 const ogImageUrl = Astro.site && ogImage ? new URL(ogImage, Astro.site).href : undefined;
@@ -25,7 +26,7 @@ const ogImageUrl = Astro.site && ogImage ? new URL(ogImage, Astro.site).href : u
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="keywords" content={seo.keywords.join('، ')} />
-    <meta name="theme-color" content="#0f1922" />
+    <meta name="theme-color" content="#0f0f0f" />
     <meta name="color-scheme" content="dark" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     {canonical && <link rel="canonical" href={canonical} />}
@@ -36,16 +37,19 @@ const ogImageUrl = Astro.site && ogImage ? new URL(ogImage, Astro.site).href : u
     <meta property="og:locale" content={seo.locale} />
     {canonical && <meta property="og:url" content={canonical} />}
     {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+    {ogImageUrl && <meta property="og:image:width" content="1200" />}
+    {ogImageUrl && <meta property="og:image:height" content="630" />}
+    {ogImageUrl && ogImageAlt && <meta property="og:image:alt" content={ogImageAlt} />}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
+    {ogImageUrl && ogImageAlt && <meta name="twitter:image:alt" content={ogImageAlt} />}
     <meta name="generator" content={Astro.generator} />
     <script is:inline>document.documentElement.classList.add('js');</script>
-    <Font cssVariable="--font-markazi" preload />
-    <Font cssVariable="--font-plex-arabic" preload={[{ weight: '400', style: 'normal' }]} />
-    <Font cssVariable="--font-cormorant" preload={[{ weight: '500', style: 'normal' }]} />
+    <Font cssVariable="--font-plex-arabic" preload={[{ weight: '700', style: 'normal' }, { weight: '400', style: 'normal' }]} />
     <Font cssVariable="--font-manrope" />
+    <Font cssVariable="--font-cormorant" />
     {structuredData && <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
     <Analytics />
   </head>
@@ -53,7 +57,7 @@ const ogImageUrl = Astro.site && ogImage ? new URL(ogImage, Astro.site).href : u
     <Analytics placement="body" />
     <a
       href="#main"
-      class="fixed start-3 top-3 z-[70] -translate-y-24 rounded-full bg-champagne-300 px-5 py-3 text-sm font-semibold text-night-900 transition-transform focus:translate-y-0"
+      class="fixed start-3 top-3 z-[70] -translate-y-24 rounded-full bg-bone-100 px-5 py-3 text-sm font-semibold text-ink-900 transition-transform focus:translate-y-0"
     >
       تخطي إلى المحتوى
     </a>

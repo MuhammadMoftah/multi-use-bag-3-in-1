@@ -1,14 +1,14 @@
 /**
- * Derives clean, single-subject crops from the owner-supplied product images in
- * `src/assets/imgs` (collages and infographics) into `src/assets/eloura`.
+ * Derives clean, single-subject images from the owner-supplied product images in
+ * `src/assets/imgs` (collages and ad banners) into `src/assets/eloura`.
  * Originals are never modified. Re-run after replacing a source image:
  *
  *   node scripts/prepare-product-images.mjs            # write crops
  *   node scripts/prepare-product-images.mjs --preview  # also write small previews to .preview/
  *
- * Crop boxes are in source pixels: [left, top, width, height]. Infographic crops
- * deliberately exclude baked-in English text and unverified claims (e.g. "55L",
- * "Waterproof", "Wrinkle-Free").
+ * Crop boxes are in source pixels: [left, top, width, height]. Banner crops
+ * deliberately exclude baked-in text and unverified claims (e.g. "Premium
+ * Cotton", "L • XL • 2XL").
  */
 import sharp from 'sharp';
 import { mkdir } from 'node:fs/promises';
@@ -19,22 +19,13 @@ const OUT = 'src/assets/eloura';
 const PREVIEW = '.preview';
 
 const crops = [
-  { out: 'hero-lifestyle', src: 'eloura_hero_4x_6144x4096.png', box: [1890, 0, 2016, 3590], width: 1600 },
-  { out: 'studio-black-cognac', src: 'Luxury Black and Cognac Travel Duffel.png' },
-  { out: 'set-black-tan', src: 'Luxury Black and Tan Travel Luggage Set.png' },
-  { out: 'organiser-pink-ar', src: 'Elegant Pink Travel Bag Organiser.png' },
-  { out: 'garment-suit', src: 'Premium Charcoal Travel Garment Bag Showcase.png', box: [0, 0, 976, 1254] },
-  { out: 'garment-dresses', src: 'Wrinkle-Resistant Garment Storage Solution.png', box: [0, 152, 1254, 1102] },
-  { out: 'detail-shoes', src: 'Premium Charcoal Travel Garment Bag Showcase.png', box: [989, 887, 260, 260] },
-  { out: 'shoe-compartment', src: 'Carry-On Garment Duffel Bag Infographic.png', box: [819, 756, 414, 364] },
-  { out: 'pink-shoulder', src: 'Blush Pink Duffel Bag Travel Collection.png', box: [0, 0, 761, 1254] },
-  { out: 'pink-hand-carry', src: 'Blush Pink Duffel Bag Travel Collection.png', box: [776, 0, 478, 645] },
-  { out: 'pink-crossbody', src: 'Blush Pink Duffel Bag Travel Collection.png', box: [776, 659, 478, 595] },
-  { out: 'cream-walk', src: 'Luxury Travel Weekender Lifestyle Collage.png', box: [0, 0, 618, 1254] },
-  { out: 'cream-couple', src: 'Luxury Travel Weekender Lifestyle Collage.png', box: [636, 0, 618, 618] },
-  { out: 'cream-trolley', src: 'Luxury Travel Weekender Lifestyle Collage.png', box: [636, 631, 618, 623] },
-  { out: 'open-blazer', src: '55L High-Capacity Garment Duffel Infographic.png', box: [0, 570, 627, 532] },
-  { out: 'packed-open', src: 'Luxury Travel Duffel Packing Guide.png', box: [54, 469, 833, 785] },
+  { out: 'model-seated', src: 'Moody Industrial Portrait in Black.png' },
+  { out: 'packshot-front', src: 'Black Basic T-Shirt Advertisement zoomed .png' },
+  { out: 'detail-neckline', src: 'Black Sweatshirt, Silver Chain and Watch.png' },
+  { out: 'model-walk', src: 'Monochrome Blackwear Editorial Collage.png', box: [0, 0, 622, 650] },
+  { out: 'model-back', src: 'Monochrome Blackwear Editorial Collage.png', box: [631, 0, 623, 650] },
+  { out: 'model-standing', src: 'Luxury Black Oversized T-Shirt Campaign.png', box: [1150, 0, 386, 800] },
+  { out: 'fabric-texture', src: 'Firefly_gpt-image.png', box: [0, 690, 430, 334] },
 ];
 
 const preview = process.argv.includes('--preview');

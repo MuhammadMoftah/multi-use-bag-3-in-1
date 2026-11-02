@@ -1,0 +1,75 @@
+---
+import { Image } from 'astro:assets';
+import Icon from '../ui/Icon.astro';
+import { tshirtImages } from '../../content/eloura-oversized-tshirt.media.js';
+import { content, pad2 } from '../../lib/content.js';
+
+const { styling, stylingPairs } = content;
+const shots = [tshirtImages.stylingFront, tshirtImages.stylingBack];
+---
+
+<section id="styling" class="section section-tint overflow-hidden" aria-labelledby="styling-title">
+  <div class="container-x">
+    <div class="grid items-end gap-8 lg:grid-cols-12">
+      <div class="lg:col-span-7">
+        <p class="eyebrow" data-reveal>{styling.eyebrow}</p>
+        <h2 id="styling-title" class="heading-2 mt-6" data-reveal style="--reveal-delay:80">
+          {styling.heading}
+          <span class="heading-accent mt-4 block">{styling.accent}</span>
+        </h2>
+      </div>
+      <p class="lead lg:col-span-5 lg:pb-2" data-reveal style="--reveal-delay:140">{styling.description}</p>
+    </div>
+
+    <div class="mt-14 grid gap-12 lg:mt-16 lg:grid-cols-12 lg:gap-16">
+      <div class="grid grid-cols-2 gap-3 sm:gap-5 lg:col-span-6">
+        {
+          shots.map((shot, index) => (
+            <figure class:list={[index === 1 && 'mt-10 sm:mt-16']} data-reveal="image" style={`--reveal-delay:${index * 140}`}>
+              <div class="frame hover-zoom aspect-[622/650]">
+                <Image
+                  src={shot.src}
+                  alt={shot.alt}
+                  widths={[320, 480, 622]}
+                  sizes="(min-width: 64rem) 18rem, 46vw"
+                  quality={64}
+                  class="media-fill"
+                />
+              </div>
+              <figcaption class="meta mt-3">{shot.caption}</figcaption>
+            </figure>
+          ))
+        }
+      </div>
+
+      <div class="lg:col-span-6">
+        <p class="label text-bone-500" data-reveal>{styling.pairsTitle}</p>
+        <ul class="mt-4 flex flex-wrap gap-2" data-reveal style="--reveal-delay:80">
+          {
+            stylingPairs.map((item: string) => (
+              <li class="tag gap-2 border-white/20 text-bone-100">
+                <Icon name="check" class="size-4 text-bone-500" />
+                {item}
+              </li>
+            ))
+          }
+        </ul>
+
+        <p class="label mt-12 text-bone-500" data-reveal>{styling.occasionsTitle}</p>
+        <ol class="hairline mt-4 border-t">
+          {
+            styling.occasions.map((item: any, index: number) => (
+              <li class="hairline grid grid-cols-[1fr_auto] items-baseline gap-x-6 gap-y-1 border-b py-5" data-reveal style={`--reveal-delay:${index * 70}`}>
+                <h3 class="text-[clamp(1.25rem,1.05rem+0.8vw,1.75rem)] leading-tight font-bold text-bone-100">{item.title}</h3>
+                <span class="font-display text-[clamp(1.5rem,1.2rem+1vw,2.25rem)] leading-none font-extrabold text-bone-700 tabular-nums" aria-hidden="true" lang="en">
+                  {pad2(index)}
+                </span>
+                <p class="meta col-span-2 text-sm">{item.detail}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
