@@ -7,10 +7,16 @@
  * Meta Pixel: official base code only (init + PageView), deferred until after
  * the window load event. Pages are static documents without client-side
  * routing, so PageView fires once per page load; the `if(f.fbq)return` guard
- * prevents a second bootstrap. ViewContent, InitiateCheckout and Purchase are
- * intentionally not sent from this site: they will be set up together with
+ * prevents a second bootstrap. Meta ViewContent, InitiateCheckout and Purchase
+ * are intentionally not sent from this site: they will be set up together with
  * EasyOrders' own Pixel integration. Never send Purchase on a CTA click;
  * orders are created on EasyOrders.
+ *
+ * TikTok Pixel: official base code (load + page) in this same head render, once
+ * per document. There is no client-side router, so the inline script does not
+ * re-run on hydration. A guard on `ttq._i[pixelId]` skips a second bootstrap.
+ * Product landing pages also send one ViewContent, queued in that same script.
+ * TikTok Purchase is not sent here; checkout completes on EasyOrders.
  *
  * GA4 (inactive while `ga4MeasurementId` is null): page view, plus view_item
  * on product landing pages (`product` prop).
@@ -23,7 +29,7 @@ import type { Product } from '../products';
 
 interface Props {
   placement?: 'head' | 'body';
-  product?: Pick<Product, 'id' | 'nameEn'>;
+  product?: Pick<Product, 'id' | 'name' | 'nameEn' | 'contentName' | 'checkoutPrice' | 'currency'>;
 }
 
 const { placement = 'head', product } = Astro.props;
@@ -60,6 +66,68 @@ else window.addEventListener('load', schedule, { once: true });
 
 const ga4Id = analytics.ga4MeasurementId;
 const viewItem = product ? { currency: site.currency, items: [{ item_id: product.id, item_name: product.nameEn }] } : null;
+
+const tiktokPixelId = analytics.tiktokPixelId;
+if (tiktokPixelId !== null && !/^[A-Za-z0-9]+$/.test(tiktokPixelId)) {
+  throw new Error(`analytics.tiktokPixelId must be an alphanumeric string, got "${tiktokPixelId}"`);
+}
+
+// One ViewContent per product document. Price comes from the product registry
+// (published price when the page shows one, otherwise the verified checkout price).
+// Omitted entirely when no numeric price exists — never invented here.
+const tiktokViewContent = (() => {
+  if (!product) return null;
+  const price = typeof product.checkoutPrice === 'number' ? product.checkoutPrice : null;
+  return {
+    content_id: product.id,
+    content_type: 'product' as const,
+    content_name: product.contentName || product.name,
+    quantity: 1,
+    ...(price !== null ? { price, value: price, currency: product.currency || site.currency } : {}),
+  };
+})();
+const tiktokViewLiteral = tiktokViewContent ? JSON.stringify(tiktokViewContent).replace(/</g, '\\u003c') : null;
+const tiktokTrack = tiktokViewLiteral ? `\n  ttq.track('ViewContent', ${tiktokViewLiteral});` : '';
+
+// Official TikTok base code, unchanged, plus a one-time guard and the optional
+// ViewContent call above. Not executed on the server: `is:inline` emits it as HTML.
+const tiktokPixelBootstrap = tiktokPixelId
+  ? `
+(function () {
+if (window.ttq && window.ttq._i && window.ttq._i['${tiktokPixelId}']) return;
+!function (w, d, t) {
+  w.TiktokAnalyticsObject=t;
+  var ttq=w[t]=w[t]||[];
+  ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"];
+  ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};
+  for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
+  ttq.instance=function(t){
+    for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);
+    return e
+  };
+  ttq.load=function(e,n){
+    var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;
+    ttq._i=ttq._i||{};
+    ttq._i[e]=[];
+    ttq._i[e]._u=r;
+    ttq._t=ttq._t||{};
+    ttq._t[e]=+new Date;
+    ttq._o=ttq._o||{};
+    ttq._o[e]=n||{};
+    n=document.createElement("script");
+    n.type="text/javascript";
+    n.async=!0;
+    n.src=r+"?sdkid="+e+"&lib="+t;
+    e=document.getElementsByTagName("script")[0];
+    e.parentNode.insertBefore(n,e)
+  };
+
+  ttq.load('${tiktokPixelId}');
+  ttq.page();${tiktokTrack}
+}(window, document, 'ttq');
+})();
+`
+  : '';
 ---
 
 {
@@ -76,6 +144,15 @@ const viewItem = product ? { currency: site.currency, items: [{ item_id: product
     <noscript>
       <img height="1" width="1" style="display:none" alt="" src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`} />
     </noscript>
+  )
+}
+{
+  placement === 'head' && tiktokPixelId && (
+    <Fragment>
+      <!-- TikTok Pixel Code Start -->
+      <script is:inline set:html={tiktokPixelBootstrap} />
+      <!-- TikTok Pixel Code End -->
+    </Fragment>
   )
 }
 {

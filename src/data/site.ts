@@ -32,6 +32,8 @@ export const store = {
 export const analytics = {
   /** Meta Pixel (dataset) ID — Eloura | Website Pixel. */
   metaPixelId: '4460772997566697' as string | null,
+  /** TikTok Pixel ID. Independent of the Meta Pixel. */
+  tiktokPixelId: 'DBNUACBC77U0V3P0S6LG' as string | null,
   ga4MeasurementId: null as string | null,
 };
 

@@ -18,11 +18,17 @@ export const commerce = {
   platform: 'EasyOrders',
   /** Live EasyOrders product page for this T-shirt. */
   checkoutUrl: 'https://elouravtx.myeasyorders.com/products/xl2tyshrt-aswd-smr-myltwn',
-  /** Selling price in EGP (number). Leave null until confirmed. */
+  /** Selling price in EGP (number). Leave null until it should be published on this site. */
   price: null,
-  /** Only set when a genuine previous price exists. */
+  /** Only set when a genuine previous price exists and should be published on this site. */
   compareAtPrice: null,
   currency: 'EGP',
+  /**
+   * Price charged on the live EasyOrders product page (EGP), verified there as 690.
+   * TikTok ViewContent reads this. It is not rendered: `price` stays null, so this
+   * site still does not publish a price or a discount.
+   */
+  checkoutPrice: 690,
 };
 
 export const product = {

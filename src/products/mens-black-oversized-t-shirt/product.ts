@@ -8,6 +8,10 @@ const tshirt: Product = {
   route: `/${product.slug}`,
   name: showcase.name,
   nameEn: product.nameEn,
+  contentName: product.name,
+  // Published `commerce.price` wins once the page shows a price; until then pixels use the verified checkout price.
+  checkoutPrice: typeof commerce.price === 'number' ? commerce.price : commerce.checkoutPrice,
+  currency: commerce.currency,
   shortDescription: showcase.shortDescription,
   category: showcase.category,
   purchaseUrl: commerce.checkoutUrl,

@@ -27,6 +27,18 @@ export interface Product {
   /** Arabic product name. */
   name: string;
   nameEn: string;
+  /**
+   * Arabic name sent as TikTok `content_name`.
+   * `name` is the homepage card title and may be longer.
+   */
+  contentName?: string;
+  /**
+   * Selling price reported to ad pixels. Not rendered.
+   * The page publishes a price only when the product's `commerce.price` is a number.
+   */
+  checkoutPrice?: number | null;
+  /** ISO currency for `checkoutPrice`. Defaults to the site currency. */
+  currency?: string;
   shortDescription: string;
   category: string;
   /** Official EasyOrders product page. Purchase CTAs link here. */
