@@ -1,4 +1,4 @@
-# Eloura Showcase
+## Eloura Showcase
 
 Arabic (RTL) interactive product showcase for Eloura. Visitors discover products on the homepage and on
 dedicated landing pages, then complete orders on the official EasyOrders store.
