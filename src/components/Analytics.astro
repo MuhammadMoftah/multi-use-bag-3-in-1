@@ -15,8 +15,10 @@
  * TikTok Pixel: official base code (load + page) in this same head render, once
  * per document. There is no client-side router, so the inline script does not
  * re-run on hydration. A guard on `ttq._i[pixelId]` skips a second bootstrap.
- * Product landing pages also send one ViewContent, queued in that same script.
- * TikTok Purchase is not sent here; checkout completes on EasyOrders.
+ * Product landing pages also send one ViewContent (`contents` array), queued in
+ * that same script. There is no on-site cart or checkout, so AddToCart and
+ * InitiateCheckout are not sent. TikTok Purchase is not sent here; checkout
+ * completes on EasyOrders.
  *
  * GA4 (inactive while `ga4MeasurementId` is null): page view, plus view_item
  * on product landing pages (`product` prop).
@@ -72,18 +74,23 @@ if (tiktokPixelId !== null && !/^[A-Za-z0-9]+$/.test(tiktokPixelId)) {
   throw new Error(`analytics.tiktokPixelId must be an alphanumeric string, got "${tiktokPixelId}"`);
 }
 
-// One ViewContent per product document. Price comes from the product registry
-// (published price when the page shows one, otherwise the verified checkout price).
-// Omitted entirely when no numeric price exists — never invented here.
+// One ViewContent per product document, in TikTok's contents-array format.
+// Price is the published price when the page shows one, otherwise the verified
+// EasyOrders charge (`checkoutPrice`, 690 EGP for this T-shirt). Never invented.
 const tiktokViewContent = (() => {
   if (!product) return null;
   const price = typeof product.checkoutPrice === 'number' ? product.checkoutPrice : null;
   return {
-    content_id: product.id,
-    content_type: 'product' as const,
-    content_name: product.contentName || product.name,
-    quantity: 1,
-    ...(price !== null ? { price, value: price, currency: product.currency || site.currency } : {}),
+    contents: [
+      {
+        content_id: product.id,
+        content_type: 'product' as const,
+        content_name: product.contentName || product.name,
+        ...(price !== null ? { price } : {}),
+        brand: site.brand,
+      },
+    ],
+    ...(price !== null ? { value: price, currency: product.currency || site.currency } : {}),
   };
 })();
 const tiktokViewLiteral = tiktokViewContent ? JSON.stringify(tiktokViewContent).replace(/</g, '\\u003c') : null;
